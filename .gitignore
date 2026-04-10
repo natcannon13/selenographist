@@ -1,0 +1,11 @@
+.env
+/node_modules
+wordlists/ridiculous_default.txt
+wordlists/medium_default.txt
+wordlists/hard_default.txt
+wordlists/easy_default.txt
+wordlists/gpt_ridiculous.txt
+wordlists/gpt_ridiculous2.txt
+wordlists/gpt_ridiculous3.txt
+wordlists/gpt_extra_ridiculous.txt
+utils/config2.json
