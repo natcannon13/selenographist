@@ -23,9 +23,15 @@ function getChannelID(input){
     return match ? match[1] : null;
 }
 
+function getRoleID(input){
+    const match = input.match(/^<@&(\d+)>$/);
+    return match ? match[1] : null;
+}
+
 module.exports = {
     loadConfig,
     saveConfig,
     getChannelID,
+    getRoleID,
     config
 }
