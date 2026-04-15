@@ -1,10 +1,23 @@
-async function sendRole(user, role){
+async function sendRole(player){
+    if(player.isMayor){
+        await user.member.send("You are the Mayor!");
+    }
     try{
-        await user.send(`Your role is: ${role}`);
+        await user.member.send(`Your role is: ${player.role}`);
         return true;
     }
     catch(error){
         console.error(`Failed to DM ${user.tag}:`);
         return false;
     }
+}
+
+async function sendInfo(player, info){
+
+}
+
+
+module.exports = {
+    sendRole,
+    sendInfo
 }

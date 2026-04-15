@@ -1,5 +1,7 @@
 const config_util = require("../utils/config_util.js");
 const roles_util = require("../utils/roles_util.js");
+const dm_util = require("../utils/dm_util.js");
+const word_util = require("..utils/word_util.js");
 const Player = require("../game/Player.js");
 class WerewordsGame{
     constructor(guildID, difficulty, mayor, client){
@@ -29,6 +31,7 @@ class WerewordsGame{
         switch(this.phase){
             case "setup":
                 this.phase = "wordChoice";
+                this.chooseWord();
                 break;
             case "wordChoice":
                 this.phase = "questions";
@@ -59,7 +62,7 @@ class WerewordsGame{
             this.assignRoles();
             console.log(this.players);
             
-            this.phase = "mayorChoice";
+            this.changePhase();
         }
     }
 
@@ -91,14 +94,15 @@ class WerewordsGame{
         for (const player of this.players.values()){
             if (player.isMayor){
                 await player.member.roles.add(role);
-                await player.member.send("You are the Mayor.");
             }
-            await player.member.send(`Your role is ${player.role}.`);
+            await dm_util.sendRole(player);
         }
     }
 
     async chooseWord(){
-
+        const mayorChannel = this.guild.channels.cache.get(this.mayorChannel);
+        channel.send(`<@${this.mayorRole}>\n Choose from these words using !word <n> where n is the number of your word.`);
+        const words = word_util.getWords(this.difficulty, this.players.get(this.mayor).role); 
     }
 }
 module.exports = WerewordsGame;

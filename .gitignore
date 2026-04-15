@@ -9,3 +9,9 @@ wordlists/gpt_ridiculous2.txt
 wordlists/gpt_ridiculous3.txt
 wordlists/gpt_extra_ridiculous.txt
 utils/config2.json
+wordlists/easy_default_punc.txt
+wordlists/gpt_extra_ridiculous_punc.txt
+wordlists/hard_default_punc copy.txt
+wordlists/hard_default_punc.txt
+wordlists/ridiculous_default_punc.txt
+wordlists/medium_default_punc.txt
