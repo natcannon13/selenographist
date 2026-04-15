@@ -1,9 +1,9 @@
 async function sendRole(player){
     if(player.isMayor){
-        await user.member.send("You are the Mayor!");
+        await player.member.send("You are the Mayor!");
     }
     try{
-        await user.member.send(`Your role is: ${player.role}`);
+        await player.member.send(`Your role is: ${player.role}`);
         return true;
     }
     catch(error){
