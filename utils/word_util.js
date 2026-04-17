@@ -43,7 +43,6 @@ async function getWords(difficulty, role){
             break;
     }
     for(list of matchingLists){
-        console.log(list);
         addWords = (await fs.readFile(`${folderPath}/${list}`, "utf8")).split('\n').map(w => w.trim()).filter(w => w.length > 0);
         words = words.concat(addWords);
     }
@@ -61,7 +60,7 @@ async function getWords(difficulty, role){
         let index = Math.floor(Math.random() * wordsSecondary.length);
         wordChoice.push(wordsSecondary[index]);
     }
-    for(let i = 0; i <= numWords; i++){
+    for(let i = 0; i < numWords; i++){
         let index = Math.floor(Math.random() * words.length);
         wordChoice.push(words[index]);
     }

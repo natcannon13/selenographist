@@ -27,6 +27,9 @@ function run(message, args, client){
         return message.reply(difficulty);
     }
     const game = GameManager.createGame(message.guild.id, difficulty, mayor, client);
+    if(!game){
+        return message.reply("There is already a game happening in this server!");
+    }
     GameManager.startGame(message.guild.id);
 }
 

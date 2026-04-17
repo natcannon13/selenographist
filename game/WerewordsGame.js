@@ -3,6 +3,7 @@ const roles_util = require("../utils/roles_util.js");
 const dm_util = require("../utils/dm_util.js");
 const word_util = require("../utils/word_util.js");
 const Player = require("../game/Player.js");
+const SecretInfo = require("../game/SecretInfo.js");
 class WerewordsGame{
     constructor(guildID, difficulty, mayor, client){
         this.players = new Map();
@@ -100,15 +101,24 @@ class WerewordsGame{
     async chooseWord(){
         const mayorChannel = this.guild.channels.cache.get(this.mayorChannel);
         await mayorChannel.send(`<@&${this.mayorRole}>\n Choose from these words using !word <n> where n is the number of your word.`);
-        const words = await word_util.getWords(this.difficulty, this.players.get(this.mayor).role);
+        this.word = await word_util.getWords(this.difficulty, this.players.get(this.mayor).role);
         let msg = "";
-        for(let i = 0; i < words.length; i++){
-            msg += `${i+1}. ${words[i]}`;
-            if (i < words.length - 1){
+        for(let i = 0; i < this.word.length; i++){
+            msg += `${i+1}. ${this.word[i]}`;
+            if (i < this.word.length - 1){
                 msg += "\n";
             }
         }
         await mayorChannel.send(msg);
+    }
+
+    async wordChosen(index){
+        this.word = this.word[index];
+        let info = new SecretInfo(this.word);
+        info.setInfo(this.players);
+        for(const player of this.players.values()){
+            dm_util.sendInfo(player, info);
+        }
     }
 }
 module.exports = WerewordsGame;
