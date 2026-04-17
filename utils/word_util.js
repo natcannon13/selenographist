@@ -7,6 +7,7 @@ async function getWords(difficulty, role){
     let secondaryPrefix = null;
     let words = [];
     let numWords = 0;
+    let numModifiedWords = 0;
     let wordsSecondary = [];
     let wordChoice = [];
 
@@ -15,30 +16,42 @@ async function getWords(difficulty, role){
             numWords = 5;
             if(role === "Seer"){
                 secondaryPrefix = "hard";
+                numModifiedWords = 2;
+                numWords = 3;
                 break;
             }
         case "hard":
             numWords = 4;
             if(role === "Seer"){
                 secondaryPrefix = "medium";
+                numModifiedWords = 2;
+                numWords = 2;
             }
             if(role === "Werewolf"){
                 secondaryPrefix = "ridiculous";
+                numModifiedWords = 2;
+                numWords = 2;
             }
             break;
         case "medium":
             numWords = 3;
             if(role === "Seer"){
                 secondaryPrefix = "easy";
+                numModifiedWords = 1;
+                numWords = 2;
             }
             if(role === "Werewolf"){
                 secondaryPrefix = "hard";
+                numModifiedWords = 1;
+                numWords = 2;
             }
             break;
         case "easy":
             numWords = 2;
             if(role === "Werewolf"){
                 secondaryPrefix = "medium";
+                numModifiedWords = 1;
+                numWords = 1;
             }
             break;
     }
@@ -50,11 +63,6 @@ async function getWords(difficulty, role){
     for(const list of matchingLists){
         addWords = (await fs.readFile(`${folderPath}/${list}`, "utf8")).split('\n').map(w => w.trim()).filter(w => w.length > 0);
         wordsSecondary = wordsSecondary.concat(addWords);
-    }
-    let numModifiedWords = 0;
-    if(secondaryPrefix != null){
-        numModifiedWords = Math.floor(numWords / 2);
-        numWords -= numModifiedWords;
     }
     for(let i = 0; i < numModifiedWords; i++){
         let index = Math.floor(Math.random() * wordsSecondary.length);

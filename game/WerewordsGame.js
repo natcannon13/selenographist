@@ -4,6 +4,7 @@ const dm_util = require("../utils/dm_util.js");
 const word_util = require("../utils/word_util.js");
 const Player = require("../game/Player.js");
 const SecretInfo = require("../game/SecretInfo.js");
+const VoiceManager = require("../utils/VoiceManager.js");
 class WerewordsGame{
     constructor(guildID, difficulty, mayor, client){
         this.players = new Map();
@@ -26,6 +27,8 @@ class WerewordsGame{
         this.mayorRole = config_util.config[guildID].mayorRole;
         this.client = client;
         this.guild = this.client.guilds.cache.get(guildID);
+        this.voice = new VoiceManager(this.guild.channels.cache.get(this.voiceChannel));
+        this.timer = null;
     }
 
     async changePhase(){
@@ -36,6 +39,7 @@ class WerewordsGame{
                 break;
             case "wordChoice":
                 this.phase = "questions";
+                await this.dayPhase();
                 break;
             case "questions":
                 if(villageWin){
@@ -61,6 +65,7 @@ class WerewordsGame{
             }
             this.players.get(this.mayor).isMayor = true;
             await this.assignRoles();
+            await this.voice.join();
             this.changePhase();
         }
     }
@@ -119,6 +124,27 @@ class WerewordsGame{
         for(const player of this.players.values()){
             dm_util.sendInfo(player, info);
         }
+        this.changePhase();
+    }
+
+    async dayPhase(){
+        let time = 0;
+        switch (this.difficulty){
+            case "ridiculous":
+                time = 360;
+                break;
+            case "hard":
+                time = 300;
+                break;
+            case "medium":
+                time = 240;
+                break;
+            case "easy":
+                time = 180;
+                break;
+        }
+        time *= 1000;
+        
     }
 }
 module.exports = WerewordsGame;
