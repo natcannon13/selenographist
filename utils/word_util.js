@@ -68,7 +68,7 @@ async function getWords(difficulty, role){
         let index = Math.floor(Math.random() * wordsSecondary.length);
         wordChoice.push(wordsSecondary[index]);
     }
-    for(let i = 0; i < numWords; i++){
+    for(let i = 0; i <= numWords; i++){
         let index = Math.floor(Math.random() * words.length);
         wordChoice.push(words[index]);
     }

@@ -15,13 +15,13 @@ function run(message, args, client){
         if(game.mayorChannel != message.channel.id){
             return message.reply("You can only use this command in the mayor channel.");
         }
-        let index = args[0];
+        let index = args[0] - 1;
         if (index >= game.word.length || index < 0){
             return message.reply("Invalid argument. Select a valid word.");
         }
         else{
-            message.reply(`Your word is: ${game.word[index-1]}`);
-            game.wordChosen(index-1);
+            message.reply(`Your word is: ${game.word[index]}`);
+            game.wordChosen(index);
         }
     }
 }

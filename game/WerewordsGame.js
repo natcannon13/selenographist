@@ -5,6 +5,8 @@ const word_util = require("../utils/word_util.js");
 const Player = require("../game/Player.js");
 const SecretInfo = require("../game/SecretInfo.js");
 const VoiceManager = require("../utils/VoiceManager.js");
+const { time } = require("discord.js");
+const { EmbedBuilder } = require('discord.js');
 class WerewordsGame{
     constructor(guildID, difficulty, mayor, client){
         this.players = new Map();
@@ -29,6 +31,9 @@ class WerewordsGame{
         this.guild = this.client.guilds.cache.get(guildID);
         this.voice = new VoiceManager(this.guild.channels.cache.get(this.voiceChannel));
         this.timer = null;
+        this.timeLeft = 0;
+        this.status = null;
+        this.updateInterval = null;
     }
 
     async changePhase(){
@@ -42,7 +47,9 @@ class WerewordsGame{
                 await this.dayPhase();
                 break;
             case "questions":
-                if(villageWin){
+                this.updateInterval = null;
+                this.clearTimer();
+                if(this.villageWin){
                     this.phase = "seerKill";
                 }
                 else{
@@ -128,23 +135,76 @@ class WerewordsGame{
     }
 
     async dayPhase(){
-        let time = 0;
         switch (this.difficulty){
             case "ridiculous":
-                time = 360;
+                this.timeLeft = 360;
                 break;
             case "hard":
-                time = 300;
+                this.timeLeft = 300;
                 break;
             case "medium":
-                time = 240;
+                this.timeLeft = 240;
                 break;
             case "easy":
-                time = 180;
+                this.timeLeft = 180;
                 break;
-        }
-        time *= 1000;
-        
+        } 
+        let time = (this.timeLeft - 60)* 1000;
+        this.startTimer(time, this.timeWarning);
+        const embed = this.buildStatusEmbed();
+        const channel = this.guild.channels.cache.get(this.gameChannel);
+        this.status = await channel.send({embeds: [embed]});
+        this.updateEmbed();
     }
+
+    startTimer(duration, onEnd){
+        this.clearTimer();
+        this.timer = setTimeout(() => {
+            this.currentTimer = null;
+            onEnd();
+        }, duration);
+    }
+
+    clearTimer() {
+        if (this.currentTimer) {
+            clearTimeout(this.currentTimer);
+            this.currentTimer = null;
+        }
+    }
+
+    timeWarning(){
+        //announce 1 minute remaining
+        this.startTimer(60000, this.changePhase);
+    }
+
+    buildStatusEmbed(){
+        let minutes = Math.floor(this.timeLeft / 60);
+        let seconds = this.timeLeft % 60;
+        if(seconds < 10){
+            seconds = `0${seconds}`;
+        }
+        return new EmbedBuilder()
+        .setTitle("Werewords")
+        .addFields(
+            {name: "Time Remaining", value: `${Math.floor(minutes)}:${seconds}`, inline: true},
+            {name: "Yes/No Tokens Left", value: `${this.tokens.yesNo}`, inline: true}
+        );
+    }
+
+    updateEmbed(){
+        this.updateInterval = setInterval(async () => {
+                if(!this.status) return;
+                try{
+                    await this.status.edit({
+                        embeds: [this.buildStatusEmbed()]
+                    });
+                } catch(err){
+                    console.error("Embed failure", err);
+                }
+                this.timeLeft -= 1;
+            }, 1000
+        );
+    }
+
 }
 module.exports = WerewordsGame;
