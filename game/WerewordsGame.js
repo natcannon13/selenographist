@@ -2,6 +2,7 @@ const config_util = require("../utils/config_util.js");
 const roles_util = require("../utils/roles_util.js");
 const dm_util = require("../utils/dm_util.js");
 const word_util = require("../utils/word_util.js");
+const emoji_util = require("../utils/emoji_util.js");
 const Player = require("../game/Player.js");
 const SecretInfo = require("../game/SecretInfo.js");
 const VoiceManager = require("../utils/VoiceManager.js");
@@ -34,6 +35,7 @@ class WerewordsGame{
         this.timeLeft = 0;
         this.status = null;
         this.updateInterval = null;
+        this.votes = [];
     }
 
     async changePhase(){
@@ -51,9 +53,11 @@ class WerewordsGame{
                 this.clearTimer();
                 if(this.villageWin){
                     this.phase = "seerKill";
+                    this.identifySeer();
                 }
                 else{
                     this.phase = "werewolfVote";
+                    this.voteForWerewolf();
                 }
                 break;
             case "seerKill":
@@ -183,15 +187,22 @@ class WerewordsGame{
         if(seconds < 10){
             seconds = `0${seconds}`;
         }
+        let tokenCounts = [];
+        for(const player of this.players.values()){
+            if(!player.isMayor){
+                tokenCounts.push({name: `**${player.member.displayName}**`, value: `${player.tokenStatsMessage()}`});
+            }
+        }
         return new EmbedBuilder()
         .setTitle("Werewords")
         .addFields(
             {name: "Time Remaining", value: `${Math.floor(minutes)}:${seconds}`, inline: true},
             {name: "Yes/No Tokens Left", value: `${this.tokens.yesNo}`, inline: true}
-        );
+        )
+        .addFields(tokenCounts);
     }
 
-    updateEmbed(){
+    async updateEmbed(){
         this.updateInterval = setInterval(async () => {
                 if(!this.status) return;
                 try{
@@ -201,9 +212,69 @@ class WerewordsGame{
                 } catch(err){
                     console.error("Embed failure", err);
                 }
-                this.timeLeft -= 1;
-            }, 1000
+                this.timeLeft -= 5;
+            }, 5000
         );
+    }
+
+    async giveToken(token, user){
+        let player = this.players.get(user);
+        let msg = `<@${user}>, The Mayor answered your question: **`;
+        switch(token){
+            case 'y':
+                msg += ("YES** " + emoji_util.yes);
+                this.tokens.yesNo--;
+                player.tokens.yes++;
+                this.checkTokens();
+                break;
+            case 'n':
+                msg += ("NO** " + emoji_util.no);
+                this.tokens.yesNo--;
+                player.tokens.no++;
+                this.checkTokens();
+                break;
+            case 'm':
+                msg += ("MAYBE** " + emoji_util.maybe);
+                this.tokens.maybe--;
+                player.tokens.maybe++;
+                break;
+            case 's':
+                msg += ("SO CLOSE!** " + emoji_util.soClose);
+                this.tokens.soClose--;
+                player.tokens.soClose++;
+                break;
+            case 'w':
+                msg += ("WAY WAY OFF!** " + emoji_util.wayWayOff);
+                this.tokens.wayWayOff--;
+                player.tokens.wayWayOff++;
+        }
+        const channel = this.guild.channels.cache.get(this.gameChannel);
+        await channel.send(msg);
+        await this.status.edit({
+            embeds: [this.buildStatusEmbed()]
+        });
+    }
+
+    async wordGuessed(user){
+        //You discovered the magic word audio
+        const channel = this.guild.channels.cache.get(this.gameChannel);
+        await channel.send(`<@${user} discovered the Magic Word!`);
+        this.villageWin = true;
+        this.changePhase();
+    }
+    async checkTokens(){
+        if(this.tokens.yesNo == 0){
+            //You ran out of tokens audio
+            this.changePhase();
+        }
+    }
+
+    async voteForWerewolf(){
+        //audio clip
+    }
+
+    async identifySeer(){
+        //audio clip
     }
 
 }

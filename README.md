@@ -6,7 +6,7 @@ A bot to play Werewords in your Discord server.
 
 Setup / Game Start Commands:
 
-!configure (admin)
+!config (admin)
 
 * Launches a series of prompts to configure the bot. Three prompts, each asks for a channel ID.
 

@@ -1,6 +1,6 @@
 const config_util = require("../utils/config_util.js");
 const GameManager = require("../game/GameManager.js");
-const WerewordsGame = require("../game/WerewordsGame.js")
+const WerewordsGame = require("../game/WerewordsGame.js");
 
 function run(message, args, client){
     let game = GameManager.findGame(message.guild.id);
