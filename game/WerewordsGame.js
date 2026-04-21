@@ -36,6 +36,7 @@ class WerewordsGame{
         this.status = null;
         this.updateInterval = null;
         this.votes = [];
+        this.werewolfSpokesman = null;
     }
 
     async changePhase(){
@@ -54,18 +55,25 @@ class WerewordsGame{
                 if(this.villageWin){
                     this.phase = "seerKill";
                     this.identifySeer();
+                    break;
                 }
                 else{
                     this.phase = "werewolfVote";
                     this.voteForWerewolf();
+                    break;
                 }
-                break;
             case "seerKill":
+                this.clearTimer();
                 this.phase = "end";
                 break;
             case "werewolfVote":
+                this.clearTimer();
                 this.phase = "end";
+                break;
+            case "end":
+                break;
         }
+        console.log(this.phase);
     }
 
     async start(){
@@ -108,7 +116,13 @@ class WerewordsGame{
         role.members.forEach(m => m.roles.remove(role));
         for (const player of this.players.values()){
             if (player.isMayor){
-                await player.member.roles.add(role);
+                try{
+                    await player.member.roles.add(role);
+                }
+                catch{
+                    const channel = this.guild.channels.cache.get(this.gameChannel);
+                    channel.send("Failure! Make sure Selenographist is above Mayor in the role hierarchy!");
+                }
             }
             await dm_util.sendRole(player);
         }
@@ -165,7 +179,7 @@ class WerewordsGame{
         this.clearTimer();
         this.timer = setTimeout(() => {
             this.currentTimer = null;
-            onEnd();
+            onEnd.call(this);
         }, duration);
     }
 
@@ -202,13 +216,44 @@ class WerewordsGame{
         .addFields(tokenCounts);
     }
 
+    buildVoteEmbed(){
+        let seconds = this.timeLeft % 60;
+        if (seconds < 10){
+            seconds = `0${seconds}`;
+        }
+        let tokenCounts = [];
+        let numVotes = 0;
+        for(const player of this.players.values()){
+            if(!player.isMayor){
+                tokenCounts.push({name: `**${player.member.displayName}**`, value: `${player.tokenStatsMessage()}`});
+            }
+            if(player.vote){
+                numVotes++;
+            }
+        }
+        return new EmbedBuilder()
+        .setTitle("Werewords")
+        .addFields(
+            {name: "Time Remaining", value: `0:${seconds}`, inline: true},
+            {name: "Votes Received", value: `${numVotes}`, inline: true}
+        )
+        .addFields(tokenCounts);
+    }
+
     async updateEmbed(){
         this.updateInterval = setInterval(async () => {
                 if(!this.status) return;
                 try{
-                    await this.status.edit({
-                        embeds: [this.buildStatusEmbed()]
-                    });
+                    if(this.phase === "questions"){
+                        await this.status.edit({
+                            embeds: [this.buildStatusEmbed()]
+                        });
+                    }
+                    if(this.phase === "werewolfVote" || this.phase === "seerKill"){
+                        await this.status.edit({
+                            embeds: [this.buildVoteEmbed()]
+                        });
+                    }
                 } catch(err){
                     console.error("Embed failure", err);
                 }
@@ -258,7 +303,7 @@ class WerewordsGame{
     async wordGuessed(user){
         //You discovered the magic word audio
         const channel = this.guild.channels.cache.get(this.gameChannel);
-        await channel.send(`<@${user} discovered the Magic Word!`);
+        await channel.send(`<@${user}> discovered the Magic Word!`);
         this.villageWin = true;
         this.changePhase();
     }
@@ -271,10 +316,76 @@ class WerewordsGame{
 
     async voteForWerewolf(){
         //audio clip
+        for(const player of this.players.getValues()){
+            this.votes[player.id] = 0;
+        }
+        this.timeLeft = 30;
+        this.startTimer(30000, this.changePhase);
+        const embed = this.buildStatusEmbed();
+        const channel = this.guild.channels.cache.get(this.gameChannel);
+        this.status = await channel.send({embeds: [embed]});
+        this.updateEmbed();
+
     }
 
     async identifySeer(){
         //audio clip
+        let werewolves = [];
+        for(const player of this.players.values()){
+            if(player.role === "Werewolf"){
+                werewolves.push(player.member.displayName);
+            }
+        }
+        if(werewolves.length > 1){
+            this.werewolfSpokesman = werewolves[Math.floor(Math.random(werewolves.length))];
+        }
+        else{
+            this.werewolfSpokesman = werewolves[0];
+        }
+        this.timeLeft = 60;
+        this.startTimer(60000, this.changePhase);
+        const embed = this.buildStatusEmbed();
+        const channel = this.guild.channels.cache.get(this.gameChannel);
+        let msg = "Werewolves: ";
+        for(const werewolf of werewolves){
+            msg += (werewolf + " ");
+        }
+        msg += `\nThe Werewolf who will be voting is: **${this.werewolfSpokesman}**`;
+        await channel.send(msg);
+        this.status = await channel.send({embeds: [embed]});
+        this.updateEmbed();
+    }
+
+    async seerVoteReceived(vote){
+        this.votes = vote;
+        this.changePhase();
+    }
+
+    async endgame(){
+        if(this.villageWin){
+            let seer = null;
+            let findApprentice = false;
+            if(this.players.getValues().length > 6){
+                if(this.players.get(this.mayor).role === "Seer"){
+                    findApprentice = true;
+                }
+            }
+            for(const player of this.players.getValues()){
+                if(findApprentice){
+                    if(player.role === "Apprentice"){
+                        seer = player.id;
+                    }
+                }
+                else{
+                    if(player.role === "Seer"){
+                        seer = player.id;
+                    }
+                }
+            }
+        }
+        else{
+
+        }
     }
 
 }

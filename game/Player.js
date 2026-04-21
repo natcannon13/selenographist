@@ -4,7 +4,7 @@ class Player{
         this.id = member.id;
         this.member = member;
         this.role = null;
-        this.hasVoted = false;
+        this.vote = null;
         this.isMayor = false;
         this.tokens = {
             yes: 0,

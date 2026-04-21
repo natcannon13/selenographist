@@ -10,18 +10,25 @@ function run(message, args, client){
             if(game.gameChannel != message.channel.id){
                 return message.reply("You can only use this command in the game channel.");
             }
-            if(game.phase == "seerKill"){
-                if(game.players.get(user.id).role != "Werewolf"){
-                    return message.reply ("You are not a Werewolf!");
+            let vote = roles_util.getPlayerID(args[0]);
+            if(game.phase === "seerKill"){
+                if(user.displayName != game.werewolfSpokesman){
+                    return message.reply ("You are not the Voting Werewolf!");
                 }
-
+                else{
+                    game.seerVoteReceived(vote);
+                }
             }
-            else if(game.phase == "werewolfVote"){
-
+            else if(game.phase === "werewolfVote"){
+                game.players.get(message.member.id).vote = vote;
             }
             else{
+                console.log(game.phase);
                 return message.reply("You cannot use this right now.");
             }
             message.delete();
     }
+}
+module.exports = {
+    run
 }
