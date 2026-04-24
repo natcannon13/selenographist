@@ -85,7 +85,9 @@ class WerewordsGame{
             await this.voice.join();
             this.getPlayers();
             if(this.mayor == null){
-                this.mayor = (this.players[Math.floor(Math.random() * this.players.length)]).id;
+                const playerArray = Array.from(this.players.values());
+                const randomPlayer = playerArray[Math.floor(Math.random() * playerArray.length)];
+                this.mayor = randomPlayer.member.id;
             }
             this.players.get(this.mayor).isMayor = true;
             await this.assignRoles();
@@ -206,7 +208,7 @@ class WerewordsGame{
 
     buildStatusEmbed(){
         let minutes = Math.floor(this.timeLeft / 60);
-        let seconds = this.timeLeft % 60;
+        let seconds = (this.timeLeft) % 60;
         if(seconds < 10){
             seconds = `0${seconds}`;
         }
@@ -252,14 +254,48 @@ class WerewordsGame{
 
     buildResultsEmbed(){
         let voteCounts = [];
+        let werewolves = [];
+        let roles = [];
+        let seer = null;
+        let apprentice = null;
+        if(!this.villageWin){
+            let numbers = this.countVotes(true);
+            for(const player of this.players.values()){
+                voteCounts.push({name: `**${player.member.displayName}**`, value: `${numbers.get(player.member.id)}`});
+            }
+        }
+        else{
+            let numbers = this.vote;
+            voteCounts.push({name: `**${this.players.get(numbers).member.displayName}**`, value: "1"});
+        }
         for(const player of this.players.values()){
+                if(player.role === "Werewolf"){
+                    werewolves.push(player.member.displayName);
+                }
+                if(player.role === "Seer"){
+                    seer = player.member.displayName;
+                }
+                if(player.role === "Apprentice"){
+                    apprentice = player.member.displayName;
+                }
+        }
+        let strWolves = "";
+        for (const wolf of werewolves){
+            strWolves += `${wolf}  `;
+        }
+        roles.push({name: "Werewolves", value: `${strWolves}`});
+        roles.push({name: "Seer", value: `${seer}`});
+        if(this.players.values().length > 6){
+            roles.push({name: "Apprentice", value: `${apprentice}`});
         }
         return new EmbedBuilder()
         .setTitle("Werewords Results")
         .addFields(
-            {name: "Magic Word", value: `${this.word}`, inline: true}
+            {name: "Magic Word", value: `${this.word}`, inline: true},
+            {name: "\u200B", value: "Votes Received:"}
         )
-        .addFields(voteCounts);
+        .addFields(voteCounts)
+        .addFields(roles);
     }
 
     async updateEmbed(){
@@ -267,7 +303,7 @@ class WerewordsGame{
                 if(!this.status) return;
                 this.timeLeft = Math.max(
                     0,
-                    Math.floor((this.endTime - Date.now()) / 1000)
+                    Math.ceil((this.endTime - Date.now()) / 1000)
                 );
                 try{
                     if(this.phase === "questions"){
@@ -333,9 +369,9 @@ class WerewordsGame{
 
     async wordGuessed(user){
         //You discovered the magic word audio
-        await this.voice.playAndWait("foundword");
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(`<@${user}> discovered the Magic Word!`);
+        await this.voice.playAndWait("foundword");
         this.villageWin = true;
         this.changePhase();
     }
@@ -392,8 +428,8 @@ class WerewordsGame{
         this.changePhase();
     }
 
-    countVotes(){
-        let votes = {}
+    countVotes(rawVotes){
+        let votes = {};
         for(const player of this.players.values()){
             if(!votes[player.id]){
                 votes[player.id] = 0;
@@ -408,6 +444,9 @@ class WerewordsGame{
             if (value > maxVotes){
                 maxVotes = value;
             }
+        }
+        if(rawVotes){
+            return votes;
         }
         let executions = [];
         for(const [id, value] of Object.entries(votes)){
@@ -445,7 +484,7 @@ class WerewordsGame{
                 channel.send(`Game Over! The Werewolves win!`);
             }
             else{
-                channel.send(`Game Over! The Village wins! The seer was: **${seerName}**.`);
+                channel.send(`Game Over! The Village wins!`);
             }
         }
         else{
@@ -455,7 +494,7 @@ class WerewordsGame{
                     werewolves.push(player.member.id);
                 }
             }
-            let executions = this.countVotes();
+            let executions = this.countVotes(false);
             let foundWerewolf = false;
             for(const player of executions){
                 if(werewolves.includes(player)){
@@ -469,12 +508,10 @@ class WerewordsGame{
             else{
                 msg += "Werewolves win!";
             }
-            msg += "\nThe Werewolves were: "
-            for(const wolf of werewolves){
-                msg += `\n${this.players.get(wolf).member.displayName}`;
-            }
             channel.send(msg);
         }
+        const embed = this.buildResultsEmbed();
+        this.status = await channel.send({embeds: [embed]});
         this.destroy();
     }
     async destroy(){
