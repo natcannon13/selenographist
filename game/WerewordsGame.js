@@ -36,6 +36,7 @@ class WerewordsGame{
         this.timeLeft = 0;
         this.endTime = null;
         this.status = null;
+        this.mayorStatus = null;
         this.updateInterval = null;
         this.vote = [];
         this.werewolfSpokesman = null;
@@ -81,13 +82,14 @@ class WerewordsGame{
 
     async start(){
         if(this.phase === "setup"){
+            await this.voice.join();
             this.getPlayers();
             if(this.mayor == null){
                 this.mayor = (this.players[Math.floor(Math.random() * this.players.length)]).id;
             }
             this.players.get(this.mayor).isMayor = true;
             await this.assignRoles();
-            await this.voice.join();
+            await this.voice.playAndWait("intro");
             this.changePhase();
         }
     }
@@ -145,6 +147,7 @@ class WerewordsGame{
             }
         }
         await mayorChannel.send(msg);
+        await this.voice.playAndWait("mayorchoose");
     }
 
     async wordChosen(index){
@@ -154,6 +157,7 @@ class WerewordsGame{
         for(const player of this.players.values()){
             dm_util.sendInfo(player, info);
         }
+        await this.voice.playAndWait("hiddeninfo");
         this.changePhase();
     }
 
@@ -171,12 +175,15 @@ class WerewordsGame{
             case "easy":
                 this.timeLeft = 180;
                 break;
-        } 
+        }
+        await this.voice.playAndWait(this.difficulty);
         let time = (this.timeLeft) * 1000;
         this.startTimer(time, this.changePhase);
         const embed = this.buildStatusEmbed();
         const channel = this.guild.channels.cache.get(this.gameChannel);
+        const mayorChannel = this.guild.channels.cache.get(this.mayorChannel);
         this.status = await channel.send({embeds: [embed]});
+        this.mayorStatus = await mayorChannel.send({embeds: [embed]});
         this.updateEmbed();
     }
 
@@ -264,9 +271,15 @@ class WerewordsGame{
                 );
                 try{
                     if(this.phase === "questions"){
+                        if(this.timeLeft == 60){
+                            this.voice.play("oneminuteremaining");
+                        }
                         await this.status.edit({
                             embeds: [this.buildStatusEmbed()]
                         });
+                        await this.mayorStatus.edit({
+                            embeds: [this.buildStatusEmbed()]
+                        })
                     }
                     if(this.phase === "werewolfVote" || this.phase === "seerKill"){
                         await this.status.edit({
@@ -276,7 +289,7 @@ class WerewordsGame{
                 } catch(err){
                     console.error("Embed failure", err);
                 }
-            }, 1000
+            }, 5000
         );
     }
 
@@ -313,13 +326,14 @@ class WerewordsGame{
         }
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(msg);
-        await this.status.edit({
+        /*await this.status.edit({
             embeds: [this.buildStatusEmbed()]
-        });
+        });*/
     }
 
     async wordGuessed(user){
         //You discovered the magic word audio
+        await this.voice.playAndWait("foundword");
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(`<@${user}> discovered the Magic Word!`);
         this.villageWin = true;
@@ -328,14 +342,18 @@ class WerewordsGame{
 
     async checkTokens(){
         if(this.tokens.yesNo == 0){
-            //You ran out of tokens audio
             this.changePhase();
         }
     }
 
     async voteForWerewolf(){
-        console.log("voteForWerewolf called at", Date.now(), this.phase);
         //audio clip
+        if(this.tokens.yesNo > 0){
+            await this.voice.playAndWait("outoftime");
+        }
+        else{
+            await this.voice.playAndWait("outoftokens");
+        }
         this.startTimer(60000, this.changePhase);
         const embed = this.buildStatusEmbed();
         const channel = this.guild.channels.cache.get(this.gameChannel);
@@ -344,7 +362,6 @@ class WerewordsGame{
     }
 
     async identifySeer(){
-        //audio clip
         let werewolves = [];
         for(const player of this.players.values()){
             if(player.role === "Werewolf"){
@@ -460,10 +477,15 @@ class WerewordsGame{
         }
         this.destroy();
     }
-    destroy(){
+    async destroy(){
         this.clearTimer();
+        let role = this.guild.roles.cache.get(this.mayorRole);
+        for (const m of role.members.values()) {
+            await m.roles.remove(role);
+        }
         this.timer = null;
         this.players = null;
+        this.voice.disconnect();
         clearTimeout(this.updateInterval);
         this.updateInterval = null;
         if (this.onEnd) {
