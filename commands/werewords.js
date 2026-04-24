@@ -3,11 +3,12 @@ const GameManager = require("../game/GameManager.js");
 const werewordsGame = require("../game/WerewordsGame.js");
 const config_util = require("../utils/config_util.js");
 
-function run(message, args, client){
-    if (!(message.member.voice.channel)) {
+async function run(message, args, client){
+    const member = await message.guild.members.fetch(message.author.id);
+    if (!(member.voice.channel)) {
         return message.reply("You must be in the voice channel to start Werewords!");
     }
-    const voiceChannel = message.member.voice.channel.id;
+    const voiceChannel = member.voice.channel.id;
     const activeChannel = config_util.config[message.guild.id].voiceChannel;
     if ((voiceChannel != activeChannel)){
         return message.reply(`You must be in <#${activeChannel}> to use this command!`);
@@ -50,7 +51,7 @@ function standardize(difficulty){
     if(difficulty === 'h'){
         return "hard";
     }
-    return "Invalid difficulty. The options are as follows:\n Ridiculous - 'ridiculous', 'r'\nHard - 'hard', 'h'\nMedium - 'medium', 'm'\nEasy - 'easy', 'e'";
+    return message.reply("Invalid difficulty. The options are as follows:\n Ridiculous - 'ridiculous', 'r'\nHard - 'hard', 'h'\nMedium - 'medium', 'm'\nEasy - 'easy', 'e'");
 }
 
 module.exports = {

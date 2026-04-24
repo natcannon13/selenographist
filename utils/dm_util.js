@@ -25,21 +25,21 @@ async function sendInfo(player, info){
             }
             break;
         case "Seer":
-            infoMessage += `The magic word is: **${info.word}**;`
+            infoMessage += `The magic word is: **${info.word}**.`;
             break;
         case "Apprentice":
             if(info.apprentice){
-                infoMessage += `The magic word is: **${info.word}**;`
+                infoMessage += `The magic word is: **${info.word}**.`;
             }
             else if(player.isMayor){
                 infoMessage += "You are the Mayor!";
             }
             else{
-                infoMessage += "The Mayor is NOT the Seer."
+                infoMessage += "The Mayor is NOT the Seer.";
             }
             break;
         case "Beholder":
-            infoMessage += "The Seer and Apprentice are:"
+            infoMessage += "The Seer and Apprentice are:";
             for(const person of info.beholder){
                 infoMessage += `\n**${person}**`;
             }

@@ -11,7 +11,9 @@ class GameManager{
         if(mayor){
             mayorID = roles_util.getPlayerID(mayor);
         }
-        const game = new WerewordsGame(guildID, difficulty, mayorID, client);
+        const game = new WerewordsGame(guildID, difficulty, mayorID, client, (result) => {
+            this.deleteGame(guildID);
+        });
         this.games.set(guildID, game);
         return game;
     }
