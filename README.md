@@ -26,7 +26,7 @@ Werewords is a social deduction word game for 4 to 15 players that combines Were
 
 
 
-#### !config \&lt;mayorRole\&gt; \&lt;gameChannel\&gt; \&lt;mayorChannel\&gt; \&lt;voiceChannel\&gt;
+#### !config &lt;mayorRole&gt; &lt;gameChannel&gt; &lt;mayorChannel&gt; &lt;voiceChannel&gt;
 
 * Saves the configuration of the bot.
 * Mention the mayor role, then link the three channels.
@@ -39,7 +39,7 @@ Werewords is a social deduction word game for 4 to 15 players that combines Were
 
 
 
-#### !werewords \&lt;difficulty\&gt; \&lt;optional: mayor\&gt;
+#### !werewords &lt;difficulty&gt; &lt;optional: mayor&gt;
 
 * Begins a game of Werewords among the players in the voice channel, unless a game is already happening.
 * Available difficulties / aliases:
@@ -82,7 +82,7 @@ The Mayor receives a Discord role granting them access to the mayor channel. The
 
 The word choices will be numbered and displayed in the mayor channel. The mayor selects the Magic Word with
 
-#### !word \&lt;number\&gt;
+#### !word &lt;number&gt;
 
 The Seer and Werewolves then receive a direct message containing the word. The Apprentice receives a direct message containing the word if the Mayor is the Seer.
 
@@ -99,7 +99,7 @@ The bot will then announce that the town has a number of minutes, depending on d
 
 During this time period players ask their questions to the Mayor. The Mayor will use the following command to answer:
 
-#### !t \&lt;token\&gt; \&lt;player\&gt;
+#### !t &lt;token&gt; &lt;player&gt;
 
 * Informs players of the Mayor's answer to their question, and tracks the remaining tokens.
 * There are 6 types of token.
@@ -127,7 +127,7 @@ An embed message displays the time and number of Yes/No tokens remaining, as wel
 
 If any player receives the Correct token, the Werewolves get an opportunity to kill the Seer. The Werewolves are revealed to the rest of the players, and get 30 seconds to discuss who the seer is. One Werewolf is randomly selected to make the final decision. To kill the Seer, this Werewolf must use the following command within the 30 seconds:
 
-#### !vote \&lt;player\&gt;
+#### !vote &lt;player&gt;
 
 If the mentioned player is the Seer, the Werewolves win.
 
