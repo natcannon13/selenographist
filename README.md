@@ -1,41 +1,60 @@
-Werewords Bot:
+# Selenographist:
 
-A bot to play Werewords in your Discord server.
+## A bot to play Werewords in your Discord server.
 
-
-
-Setup / Game Start Commands:
-
-!config (admin)
-
-* Launches a series of prompts to configure the bot. Three prompts, each asks for a channel ID.
-
-  * Mayor Commands
-  * Gameplay Channel
-  * Voice Call
+Credit to Bezier Games for inventing Werewords.
 
 
 
-!werewords <difficulty> <optional: mayor>
+#### What is Werewords?
 
-* Begins a game of Werewords among the players in the call if one is not already happening. Otherwise returns an error.
-* Difficulty parameter looks for one of the following
-
-  * e
-  * easy
-  * m
-  * medium
-  * h
-  * hard
-  * r
-  * ridiculous
-* Mayor parameter sets the mayor to a certain user if the user is present in the call. If left blank or the user is not in the call, selects a random valid mayor. Assigns the user the Mayor role.
+Werewords is a social deduction word game for 4 to 15 players that combines Werewolf and Twenty Questions. Each game has a Mayor, who selects a Magic Word. The remaining players ask yes/no questions to the Mayor to try to guess the Magic Word. Each player has a secret role, which places them on either the Village or the Werewolf team. The Village wants the word to be guessed, whereas the Werewolf does not want the word to be guessed. A Seer on the Village team knows the word, and can guide the Villagers towards it. However, the Werewolves also know the word, and will try to mislead the town. If the word is guessed, the Werewolves can steal the victory by killing the Seer. If the word is not guessed, the Villagers can claim victory by voting out a Werewolf.
 
 
 
-Gameplay:
+#### How to use this bot:
 
-Roles are assigned. 
+1. Add the bot to your server.
+2. Create 2 text channels and 1 voice channel for the game.
+3. Create a mayor role and restrict one of the text channels to be only visible to the mayor.
+4. Run !config to link the bot to the channels and role
+5. Run !werewords to play!
+
+### 
+
+### Bot Commands:
+
+
+
+#### !config <mayorRole> <gameChannel> <mayorChannel> <voiceChannel>
+
+* Saves the configuration of the bot.
+* Mention the mayor role, then link the three channels.
+
+
+
+#### !showconfig
+
+* Displays the bot configuration for your server.
+
+
+
+#### !werewords <difficulty> <optional: mayor>
+
+* Begins a game of Werewords among the players in the voice channel, unless a game is already happening.
+* Available difficulties / aliases:
+
+  * 'ridiculous', 'r'
+  * 'hard', 'h',
+  * 'medium', 'm',
+  * 'easy', 'e'
+* If a user is mentioned, that user will be assigned as the Mayor. Otherwise, a random player will be assigned as the Mayor.
+
+
+
+### Gameplay:
+
+When the game begins, each player is assigned and direct messaged their role.
 
 Which roles are used depends on player count:
 
@@ -52,31 +71,38 @@ Which roles are used depends on player count:
 * 14 - Seer, Apprentice, Beholder, 2x Mason, 3x Werewolf, 6x Villager
 * 15 - Seer, Apprentice, Beholder, 2x Mason, 3x Werewolf, 7x Villager
 
-Player Count must be between 4 and 15.
 
-Discord role is only given to the mayor. Players assigned other roles receive a direct message from the bot informing them what their role is. If they are a werewolf, they learn who the other werewolf is. If they are a mason, they learn who the other mason is. If they are the Beholder, they learn the Seer and Apprentice.
 
-The Mayor is pinged in the mayor commands channel with a choice of n words depending on difficulty.
-
-n = 
+The Mayor receives a Discord role granting them access to the mayor channel. The Mayor is then pinged in the mayor channel with a choice of a number of words depending on difficulty.
 
 * 2 on easy
 * 3 on medium
 * 4 on hard
 * 5 on ridiculous
 
-The words are numbered 1-n. To select his word, the mayor uses the command "!word <x>" where x is the number of his choice.
+The word choices will be numbered and displayed in the mayor channel. The mayor selects the Magic Word with
+
+#### !word <number>
 
 The Seer and Werewolves then receive a direct message containing the word. The Apprentice receives a direct message containing the word if the Mayor is the Seer.
 
 
 
-The bot will then announce that the town has n+1 minutes to guess the word. During this time period players ask their questions to the mayor. The mayor will type commands in the mayor command channel to answer.
+The bot will then announce that the town has a number of minutes, depending on difficulty, to guess the word.
 
-!t <token> <player>
+* 3 on easy
+* 4 on medium
+* 5 on hard
+* 6 on ridiculous
 
-* The player parameter determines the person who will be pinged in the game channel with the answer.
-* The token parameter can be one of 6 valid options
+
+
+During this time period players ask their questions to the Mayor. The Mayor will use the following command to answer:
+
+#### !t <token> <player>
+
+* Informs players of the Mayor's answer to their question, and tracks the remaining tokens.
+* There are 6 types of token.
 
   * y (yes)
   * n (no)
@@ -84,41 +110,38 @@ The bot will then announce that the town has n+1 minutes to guess the word. Duri
   * s (so close)
   * w (way way off)
   * c (correct)
-* There is a limit to which tokens are available.
+* Tokens are limited.
 
-  * 36 yes/no combined triggers the village loss condition.
-  * 12 maybe makes maybe unavailable
-  * 1 s or w makes those unavailable
-  * 1 c triggers the village win condition
-* At any time a player may run !t r in the game channel to view how many yes/no tokens remain.
-
-
-
-Running out of time triggers the village loss condition.
+  * 36 Yes/No tokens
+  * 12 Maybe tokens
+  * 1 So Close token
+  * 1 Way Way Off token
+  * 1 Correct token
+* The mentioned player will be mentioned in the game channel with the Mayor's response.
 
 
 
-Village Win Condition:
-
-* The Werewolves are revealed to the rest of the table. They get 15 \* w seconds to discuss who they think the seer is. At the end of this time, one werewolf votes on who the seer is.
-
-The command is !vote <player>
-
-* If the seer is correctly identified, the werewolves win.
+An embed message displays the time and number of Yes/No tokens remaining, as well as the tokens received by each player.
 
 
 
-Village Loss Condition:
+If any player receives the Correct token, the Werewolves get an opportunity to kill the Seer. The Werewolves are revealed to the rest of the players, and get 30 seconds to discuss who the seer is. One Werewolf is randomly selected to make the final decision. To kill the Seer, this Werewolf must use the following command within the 30 seconds:
 
-The village gets 60 seconds to discuss who they think the werewolf is. At the end of this time, everyone votes for who they think the werewolf is.
+#### !vote <player>
 
-The command is !vote <player>
-
-If the person who receives the most votes is a werewolf, the village wins.
+If the mentioned player is the Seer, the Werewolves win.
 
 
 
-The mayor role is then removed and the game resets.
+If the town runs out of Yes/No tokens or the timer runs out before they have guessed the Magic Word, the Village must now try to vote out a Werewolf. The Magic Word is revealed to every player, and the town gets 60 seconds to discuss who the Werewolves are. Each player votes using the same vote command within the 60 seconds.
 
 
+
+If the player(s) with the most votes is a Werewolf, the Village wins.
+
+
+
+After either voting phase, an embed message is sent, displaying the Seer and Werewolves, and the winner of the game.
+
+The bot then disconnects from the voice channel, removes the Mayor role, and resets so that the game can be played again!
 
