@@ -1,5 +1,4 @@
 const WerewordsGame = require("./WerewordsGame");
-const roles_util = require("../utils/roles_util.js");
 class GameManager{
     constructor(guildID){
         this.games = new Map(); 
@@ -7,11 +6,7 @@ class GameManager{
 
     createGame(guildID, difficulty, mayor, client){
         if(this.games.has(guildID)) return null;
-        let mayorID = null;
-        if(mayor){
-            mayorID = roles_util.getPlayerID(mayor);
-        }
-        const game = new WerewordsGame(guildID, difficulty, mayorID, client, (result) => {
+        const game = new WerewordsGame(guildID, difficulty, mayor, client, (result) => {
             this.deleteGame(guildID);
         });
         this.games.set(guildID, game);

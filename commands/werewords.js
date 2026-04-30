@@ -2,6 +2,7 @@ const { config } = require("dotenv");
 const GameManager = require("../game/GameManager.js");
 const werewordsGame = require("../game/WerewordsGame.js");
 const config_util = require("../utils/config_util.js");
+const roles_util = require("../utils/roles_util.js");
 
 async function run(message, args, client){
     const member = await message.guild.members.fetch(message.author.id);
@@ -18,7 +19,12 @@ async function run(message, args, client){
         mayor = null;
     }
     else if(args.length == 2){
-        mayor = args[1];
+        let mayorID = roles_util.getPlayerID(args[1]);
+        let mayorPlayer = await message.guild.members.fetch(mayorID);
+        if(mayorPlayer.voice.channel.id != activeChannel){
+            return message.reply(`That person is not in the voice channel, and cannot be the Mayor.`)
+        }
+        mayor = mayorID;
     }
     else{
         return message.reply("Incorrect number of arguments. Correct form for this command is:\n!werewords <difficulty> <optional:mayor>");
