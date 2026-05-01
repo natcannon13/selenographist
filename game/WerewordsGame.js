@@ -109,6 +109,15 @@ class WerewordsGame{
                 const player = new Player(member);
                 this.players.set(player.id, player);
             });
+            const channel = this.guild.channels.cache.get(this.gameChannel);
+        if(this.players.size < 4){
+            channel.send("Not enough players!");
+            this.destroy();
+        }
+        else if(this.players.size > 15){
+            channel.send("Too many players!");
+            this.destroy();
+        }
     }
 
     async assignRoles(){
@@ -139,7 +148,14 @@ class WerewordsGame{
 
     async chooseWord(){
         const mayorChannel = this.guild.channels.cache.get(this.mayorChannel);
-        await mayorChannel.send(`<@&${this.mayorRole}>\n Choose from these words using !word <n> where n is the number of your word.`);
+        const gameChannel = this.guild.channels.cache.get(this.gameChannel);
+        try{
+            await mayorChannel.send(`<@&${this.mayorRole}>\n Choose from these words using !word <n> where n is the number of your word.`);
+        }
+        catch{
+            await gameChannel.send("Failure! Make sure Selenographist has access to the mayor channel!");
+            this.destroy();
+        }
         this.word = await word_util.getWords(this.difficulty, this.players.get(this.mayor).role);
         let msg = "";
         for(let i = 0; i < this.word.length; i++){
