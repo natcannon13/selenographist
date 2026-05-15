@@ -109,13 +109,13 @@ class WerewordsGame{
                 const player = new Player(member);
                 this.players.set(player.id, player);
             });
-            const channel = this.guild.channels.cache.get(this.gameChannel);
+        const gchannel = this.guild.channels.cache.get(this.gameChannel);
         if(this.players.size < 4){
-            channel.send("Not enough players!");
+            gchannel.send("Not enough players!");
             this.destroy();
         }
         else if(this.players.size > 15){
-            channel.send("Too many players!");
+            gchannel.send("Too many players!");
             this.destroy();
         }
     }

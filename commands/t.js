@@ -14,7 +14,7 @@ async function run(message, args, client){
         if(game.phase != "questions"){
             return message.reply("You cannot use this right now.");
         }
-        if(game.mayorChannel != message.channel.id){
+        if(game.gameChannel != message.channel.id){
             return message.reply("You can only use this command in the mayor channel.");
         }
         let token = args[0];

@@ -87,6 +87,7 @@ function getRoleList(numPlayers){
         roles.push("Mason");
         roles.push("Mason");
     }
+    console.log(roles);
     shuffle(roles);
     return roles;
 }
