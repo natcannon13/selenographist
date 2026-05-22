@@ -1,4 +1,5 @@
 function getRoleList(numPlayers){
+    numPlayers = Number(numPlayers)
     if (numPlayers < 4 || numPlayers > 15){
         return [];
     }
@@ -71,10 +72,10 @@ function getRoleList(numPlayers){
             masons = true;
             break;  
     }
-    for (i = 0; i < numExtraVillagers; i++){
+    for (let i = 0; i < numExtraVillagers; i++){
         roles.push("Villager");
     }
-    for (i = 0; i < numExtraWerewolves; i++){
+    for (let i = 0; i < numExtraWerewolves; i++){
         roles.push("Werewolf");
     }
     if(apprentice){
@@ -87,7 +88,6 @@ function getRoleList(numPlayers){
         roles.push("Mason");
         roles.push("Mason");
     }
-    console.log(roles);
     shuffle(roles);
     return roles;
 }

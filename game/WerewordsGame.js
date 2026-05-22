@@ -109,6 +109,7 @@ class WerewordsGame{
                 const player = new Player(member);
                 this.players.set(player.id, player);
             });
+        console.log(this.players.values);
         const gchannel = this.guild.channels.cache.get(this.gameChannel);
         if(this.players.size < 4){
             gchannel.send("Not enough players!");
