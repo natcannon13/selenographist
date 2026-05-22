@@ -83,7 +83,11 @@ class WerewordsGame{
     async start(){
         if(this.phase === "setup"){
             await this.voice.join();
-            this.getPlayers();
+            if(!this.getPlayers()){
+                await this.destroy();
+                return;
+            }
+            else{
             if(this.mayor == null){
                 const playerArray = Array.from(this.players.values());
                 const randomPlayer = playerArray[Math.floor(Math.random() * playerArray.length)];
@@ -92,7 +96,8 @@ class WerewordsGame{
             this.players.get(this.mayor).isMayor = true;
             await this.assignRoles();
             await this.voice.playAndWait("intro");
-            this.changePhase();
+            await this.changePhase();
+            }
         }
     }
 
@@ -113,12 +118,13 @@ class WerewordsGame{
         const gchannel = this.guild.channels.cache.get(this.gameChannel);
         if(this.players.size < 4){
             gchannel.send("Not enough players!");
-            this.destroy();
+            return false;
         }
         else if(this.players.size > 15){
             gchannel.send("Too many players!");
-            this.destroy();
+            return false;
         }
+        return true;
     }
 
     async assignRoles(){
@@ -174,10 +180,10 @@ class WerewordsGame{
         let info = new SecretInfo(this.word);
         info.setInfo(this.players);
         for(const player of this.players.values()){
-            dm_util.sendInfo(player, info);
+           await dm_util.sendInfo(player, info);
         }
         await this.voice.playAndWait("hiddeninfo");
-        this.changePhase();
+        await this.changePhase();
     }
 
     async dayPhase(){
@@ -219,6 +225,7 @@ class WerewordsGame{
     clearTimer() {
         if (this.timer) {
             clearTimeout(this.timer);
+            clearInterval(this.updateInterval);
             this.timer = null;
         }
     }
@@ -302,7 +309,7 @@ class WerewordsGame{
         }
         roles.push({name: "Werewolves", value: `${strWolves}`});
         roles.push({name: "Seer", value: `${seer}`});
-        if(this.players.values().length > 6){
+        if(this.players.size > 6){
             roles.push({name: "Apprentice", value: `${apprentice}`});
         }
         return new EmbedBuilder()
@@ -390,12 +397,12 @@ class WerewordsGame{
         await channel.send(`<@${user}> discovered the Magic Word!`);
         await this.voice.playAndWait("foundword");
         this.villageWin = true;
-        this.changePhase();
+        await this.changePhase();
     }
 
     async checkTokens(){
         if(this.tokens.yesNo == 0){
-            this.changePhase();
+            await this.changePhase();
         }
     }
 
@@ -422,10 +429,10 @@ class WerewordsGame{
             }
         }
         if(werewolves.length > 1){
-            this.werewolfSpokesman = werewolves[Math.floor(Math.random(werewolves.length))];
+            this.werewolfSpokesman = werewolves[Math.floor(Math.random(werewolves.length))].displayName;
         }
         else{
-            this.werewolfSpokesman = werewolves[0];
+            this.werewolfSpokesman = werewolves[0].displayName;
         }
         this.startTimer(30000, this.changePhase);
         const embed = this.buildStatusEmbed();
@@ -442,7 +449,7 @@ class WerewordsGame{
 
     async seerVoteReceived(vote){
         this.vote = vote;
-        this.changePhase();
+        await this.changePhase();
     }
 
     countVotes(rawVotes){
@@ -479,7 +486,7 @@ class WerewordsGame{
         if(this.villageWin){
             let seer = null;
             let findApprentice = false;
-            if(this.players.values().length > 6){
+            if(this.players.size > 6){
                 if(this.players.get(this.mayor).role === "Seer"){
                     findApprentice = true;
                 }
@@ -540,7 +547,7 @@ class WerewordsGame{
         this.timer = null;
         this.players = null;
         this.voice.disconnect();
-        clearTimeout(this.updateInterval);
+        clearInterval(this.updateInterval);
         this.updateInterval = null;
         if (this.onEnd) {
         this.onEnd(

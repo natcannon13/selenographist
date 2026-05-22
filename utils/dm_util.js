@@ -46,7 +46,7 @@ async function sendInfo(player, info){
             break;
         case "Mason":
             infoMessage += "The Masons are:"
-            for(const person of info.beholder){
+            for(const person of info.masons){
                 infoMessage += `\n**${person}**`;
             }
     }

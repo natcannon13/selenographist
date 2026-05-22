@@ -24,6 +24,9 @@ function run(message, args, client){
             game.wordChosen(index);
         }
     }
+    else{
+        return message.reply("This command can only be used during a game!");
+    }
 }
 module.exports = {
     run

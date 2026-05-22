@@ -4,7 +4,11 @@ const werewordsGame = require("../game/WerewordsGame.js");
 async function run(message, args, client){
     const game = GameManager.findGame(message.guild.id);
 
-    if (!message.member.permissions.has("Administrator") && !(game.mayor)){
+    if(!game){
+        return message.reply("There is no game happening in this server!");
+    }
+
+    if (!message.member.permissions.has("Administrator") && !(message.member.id === game.mayor)){
         return message.reply("You must be the Mayor or an admin to quit the game!");
     }
     game.destroy();

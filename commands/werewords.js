@@ -29,7 +29,7 @@ async function run(message, args, client){
     else{
         return message.reply("Incorrect number of arguments. Correct form for this command is:\n!werewords <difficulty> <optional:mayor>");
     }
-    difficulty = standardize(args[0]);
+    let difficulty = standardize(args[0]);
     if(difficulty.charAt(0) === "I"){
         return message.reply(difficulty);
     }
@@ -57,7 +57,7 @@ function standardize(difficulty){
     if(difficulty === 'h'){
         return "hard";
     }
-    return message.reply("Invalid difficulty. The options are as follows:\n Ridiculous - 'ridiculous', 'r'\nHard - 'hard', 'h'\nMedium - 'medium', 'm'\nEasy - 'easy', 'e'");
+    return "Invalid difficulty. The options are as follows:\n Ridiculous - 'ridiculous', 'r'\nHard - 'hard', 'h'\nMedium - 'medium', 'm'\nEasy - 'easy', 'e'";
 }
 
 module.exports = {

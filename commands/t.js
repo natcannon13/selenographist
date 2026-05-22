@@ -54,8 +54,10 @@ async function run(message, args, client){
             default:
                 return message.reply("Invalid token! Valid options:\ny - Yes\nn - No\nm - maybe\nw - Way Way Off\ns - So Close\nc - Correct");
         }
-        
-    }
+}
+else{
+    return message.reply("This command can only be used during a game!");
+}
 }
 module.exports = {
     run

@@ -31,6 +31,9 @@ function run(message, args, client){
             }
             message.delete();
     }
+    else{
+        return message.reply("This command can only be used during a game!");
+    }
 }
 module.exports = {
     run
