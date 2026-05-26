@@ -12,7 +12,6 @@ async function run(message, args, client){
         return message.reply("You must be the Mayor or an admin to quit the game!");
     }
     game.destroy();
-    GameManager.deleteGame(message.guild.id);
     return message.reply("Game successfully quit!");
 }
 

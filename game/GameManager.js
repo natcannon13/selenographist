@@ -17,10 +17,10 @@ class GameManager{
         return this.games.get(guildID);
     }
 
-    startGame(guildID){
+    async startGame(guildID){
         const game = this.findGame(guildID);
         if(game){
-            game.start();
+            await game.start();
         }
     }
 

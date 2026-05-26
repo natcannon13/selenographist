@@ -60,6 +60,7 @@ class WerewordsGame{
                 await this.dayPhase();
                 break;
             case "questions":
+                clearInterval(this.updateInterval);
                 this.updateInterval = null;
                 this.clearTimer();
                 if(this.villageWin){
@@ -288,15 +289,21 @@ class WerewordsGame{
         let roles = [];
         let seer = null;
         let apprentice = null;
-        if(!this.villageWin){
-            let numbers = this.countVotes(true);
-            for(const player of this.players.values()){
-                voteCounts.push({name: `**${player.member.displayName}**`, value: `${numbers.get(player.member.id)}`});
+        if (!this.villageWin) {
+            const numbers = this.countVotes(true);
+            for (const player of this.players.values()) {
+                const count = numbers[player.id] ?? 0;
+                voteCounts.push({
+                    name: `**${player.member.displayName}**`,
+                    value: `${count}`,
+                });
             }
         }
         else{
             let numbers = this.vote;
-            voteCounts.push({name: `**${this.players.get(numbers).member.displayName}**`, value: "1"});
+            if(numbers != null){
+                voteCounts.push({name: `**${this.players.get(numbers).member.displayName}**`, value: "1"});
+            }
         }
         for(const player of this.players.values()){
                 if(player.role === "Werewolf"){
@@ -374,13 +381,13 @@ class WerewordsGame{
                 msg += ("YES** " + emoji_util.yes);
                 this.tokens.yesNo--;
                 player.tokens.yes++;
-                this.checkTokens();
+                await this.checkTokens();
                 break;
             case 'n':
                 msg += ("NO** " + emoji_util.no);
                 this.tokens.yesNo--;
                 player.tokens.no++;
-                this.checkTokens();
+                await this.checkTokens();
                 break;
             case 'm':
                 msg += ("MAYBE** " + emoji_util.maybe);
@@ -509,7 +516,7 @@ class WerewordsGame{
             }
         }
         if(werewolves.length > 1){
-            this.werewolfSpokesman = werewolves[Math.floor(Math.random(werewolves.length))];
+            this.werewolfSpokesman = werewolves[Math.floor(Math.random() * werewolves.length)];
         }
         else{
             this.werewolfSpokesman = werewolves[0];
@@ -532,31 +539,25 @@ class WerewordsGame{
         await this.changePhase();
     }
 
-    countVotes(rawVotes){
-        let votes = {};
-        for(const player of this.players.values()){
-            if(!votes[player.id]){
-                votes[player.id] = 0;
-            }
-            if(!votes[player.vote]){
-                votes[player.vote] = 0;
-            }
-            votes[player.vote]++;
+    countVotes(rawVotes) {
+        const votes = {};
+        for (const player of this.players.values()) {
+            if (player.vote == null) continue;
+            votes[player.vote] = (votes[player.vote] ?? 0) + 1;
         }
-        let maxVotes = 0;
-        for(const [id, value] of Object.entries(votes)){
-            if (value > maxVotes){
-                maxVotes = value;
-            }
-        }
-        if(rawVotes){
+
+        if (rawVotes) {
             return votes;
         }
-        let executions = [];
-        for(const [id, value] of Object.entries(votes)){
-            if (value == maxVotes){
-                executions.push(id);
-            }
+
+        let maxVotes = 0;
+        for (const count of Object.values(votes)) {
+            if (count > maxVotes) maxVotes = count;
+        }
+
+        const executions = [];
+        for (const [id, count] of Object.entries(votes)) {
+            if (count === maxVotes) executions.push(id);
         }
         return executions;
     }

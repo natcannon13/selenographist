@@ -19,7 +19,7 @@ async function run(message, args, client){
                 return message.reply("You already have an unanswered question!");
             }
             else{
-                game.askQuestion(player);
+                await game.askQuestion(player);
             }
             
     }

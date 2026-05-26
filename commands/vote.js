@@ -3,7 +3,7 @@ const WerewordsGame = require("../game/WerewordsGame.js");
 const Player = require("../game/Player.js");
 const roles_util = require("../utils/roles_util.js");
 
-function run(message, args, client){
+async function run(message, args, client){
     let game = GameManager.findGame(message.guild.id);
         if(game){
             let user = message.member;
@@ -19,7 +19,7 @@ function run(message, args, client){
                     return message.reply ("You are not the Voting Werewolf!");
                 }
                 else{
-                    game.seerVoteReceived(vote);
+                    await game.seerVoteReceived(vote);
                 }
             }
             else if(game.phase === "werewolfVote"){

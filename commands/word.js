@@ -2,7 +2,7 @@ const config_util = require("../utils/config_util.js");
 const GameManager = require("../game/GameManager.js");
 const WerewordsGame = require("../game/WerewordsGame.js");
 
-function run(message, args, client){
+async function run(message, args, client){
     let game = GameManager.findGame(message.guild.id);
     if(game){
         let user = message.member;
@@ -21,7 +21,7 @@ function run(message, args, client){
         }
         else{
             message.reply(`Your word is: ${game.word[index]}`);
-            game.wordChosen(index);
+            await game.wordChosen(index);
         }
     }
     else{

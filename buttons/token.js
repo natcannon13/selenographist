@@ -10,6 +10,9 @@ async function run(interaction, guildId, user, option){
     if(!game){
         return;
     }
+    if(!(interaction.member.id === game.mayor)){
+        return interaction.reply("You are not the mayor!");
+    }
     switch(option){
         case "yes":
             game.giveToken('y', user);

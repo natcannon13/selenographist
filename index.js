@@ -28,7 +28,7 @@ client.on('messageCreate', message => {
 });
 
 client.on("interactionCreate", async interaction => {
-  console.log(interaction);
+  await interaction.deferUpdate();
   if(!interaction.isButton()){
     return;
   }
