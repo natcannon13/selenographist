@@ -6,7 +6,7 @@ const emoji_util = require("../utils/emoji_util.js");
 const Player = require("../game/Player.js");
 const SecretInfo = require("../game/SecretInfo.js");
 const VoiceManager = require("../utils/VoiceManager.js");
-const { time } = require("discord.js");
+const { time, ActionRow } = require("discord.js");
 const { EmbedBuilder,
     ButtonBuilder,
     ButtonStyle,
@@ -35,6 +35,7 @@ class WerewordsGame{
         this.mayorRole = config_util.config[guildID].mayorRole;
         this.client = client;
         this.guild = this.client.guilds.cache.get(guildID);
+        this.guildID = guildID;
         this.voice = new VoiceManager(this.guild.channels.cache.get(this.voiceChannel));
         this.timer = null;
         this.timeLeft = 0;
@@ -358,6 +359,13 @@ class WerewordsGame{
         );
     }
 
+    async askQuestion(user){
+        let msg = this.buildTokenEmbed(user);
+        const channel = this.guild.channels.cache.get(this.mayorChannel);
+        const message = await channel.send(msg);
+        this.players.get(user).questionEmbed = message;
+    }
+
     async giveToken(token, user){
         let player = this.players.get(user);
         let msg = `<@${user}>, The Mayor answered your question: **`;
@@ -391,22 +399,80 @@ class WerewordsGame{
         }
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(msg);
+        await this.players.get(user).questionEmbed.delete();
+        this.players.get(user).questionEmbed = null;
         /*await this.status.edit({
             embeds: [this.buildStatusEmbed()]
         });*/
     }
 
-    async buildTokenEmbed(user){
+    buildTokenEmbed(user){
         const embed = new EmbedBuilder()
-        .setTitle(`<@${user.id}> asked a question!`)
+        .setTitle(`${this.players.get(user).member.displayName} asked a question!`)
         .setDescription("Choose a token:");
 
-        const buttons = [];
-        
+        const yesButton = new ButtonBuilder()
+            .setCustomId(`token:${this.guildID}:${user}:yes`)
+            .setLabel(`Yes: ${this.tokens.yesNo}`)
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji('1494609206223962183');
+
+        const noButton = new ButtonBuilder()
+            .setCustomId(`token:${this.guildID}:${user}:no`)
+            .setLabel(`No: ${this.tokens.yesNo}`)
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji('1494609273865371649');
+
+        const maybeButton = new ButtonBuilder()
+            .setCustomId(`token:${this.guildID}:${user}:maybe`)
+            .setLabel(`Maybe: ${this.tokens.maybe}`)
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(!this.tokens.maybe)
+            .setEmoji('1494609290252783779');
+
+        const soCloseButton = new ButtonBuilder()
+            .setCustomId(`token:${this.guildID}:${user}:soClose`)
+            .setLabel(`So Close!: ${this.tokens.soClose}`)
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(!this.tokens.soClose)
+            .setEmoji('1494609243981090866');
+
+        const wayWayOffButton = new ButtonBuilder()
+            .setCustomId(`token:${this.guildID}:${user}:wayWayOff`)
+            .setLabel(`Way Way Off!: ${this.tokens.wayWayOff}`)
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(!this.tokens.wayWayOff)
+            .setEmoji('1494609231654027304');
+
+        const correctButton = new ButtonBuilder()
+            .setCustomId(`token:${this.guildID}:${user}:correct`)
+            .setLabel(`Correct!: ${this.tokens.correct}`)
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji('1494609305775771658');
+
+        const row1 = new ActionRowBuilder()
+            .addComponents(
+                yesButton,
+                noButton,
+                maybeButton
+            );
+        const row2 = new ActionRowBuilder()
+            .addComponents(
+                soCloseButton,
+                wayWayOffButton,
+                correctButton
+            )
+
+        return ({
+            embeds: [embed],
+            components: [row1, row2]
+        })
     }
 
     async wordGuessed(user){
         //You discovered the magic word audio
+        await this.players.get(user).questionEmbed.delete();
+        this.players.get(user).questionEmbed = null;
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(`<@${user}> discovered the Magic Word!`);
         await this.voice.playAndWait("foundword");
@@ -443,10 +509,10 @@ class WerewordsGame{
             }
         }
         if(werewolves.length > 1){
-            this.werewolfSpokesman = werewolves[Math.floor(Math.random(werewolves.length))].displayName;
+            this.werewolfSpokesman = werewolves[Math.floor(Math.random(werewolves.length))];
         }
         else{
-            this.werewolfSpokesman = werewolves[0].displayName;
+            this.werewolfSpokesman = werewolves[0];
         }
         this.startTimer(30000, this.changePhase);
         const embed = this.buildStatusEmbed();

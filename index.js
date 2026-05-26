@@ -27,4 +27,22 @@ client.on('messageCreate', message => {
 
 });
 
+client.on("interactionCreate", async interaction => {
+  console.log(interaction);
+  if(!interaction.isButton()){
+    return;
+  }
+  const [action, guildId, user, option] =
+    interaction.customId.split(":");
+
+  try{
+    const interact = require(`./buttons/${action}.js`);
+    interact.run(interaction, guildId, user, option);
+  }
+  catch(err){
+    console.log(err);
+    interaction.reply("Interaction failed");
+  }
+});
+
 client.login(process.env.TOKEN);

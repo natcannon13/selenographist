@@ -14,6 +14,7 @@ class Player{
             soClose: 0,
             correct: 0
         };
+        this.questionEmbed = null;
     }
     tokenStatsMessage(){
         let msg = "";
