@@ -7,7 +7,11 @@ const Player = require("../game/Player.js");
 const SecretInfo = require("../game/SecretInfo.js");
 const VoiceManager = require("../utils/VoiceManager.js");
 const { time } = require("discord.js");
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder
+ } = require('discord.js');
 const GameManager = require("./GameManager.js");
 class WerewordsGame{
     constructor(guildID, difficulty, mayor, client, onEnd){
@@ -41,6 +45,7 @@ class WerewordsGame{
         this.vote = [];
         this.werewolfSpokesman = null;
         this.onEnd = onEnd;
+        this.questions = []
     }
 
     async changePhase(){
@@ -389,6 +394,15 @@ class WerewordsGame{
         /*await this.status.edit({
             embeds: [this.buildStatusEmbed()]
         });*/
+    }
+
+    async buildTokenEmbed(user){
+        const embed = new EmbedBuilder()
+        .setTitle(`<@${user.id}> asked a question!`)
+        .setDescription("Choose a token:");
+
+        const buttons = [];
+        
     }
 
     async wordGuessed(user){
