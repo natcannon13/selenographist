@@ -406,8 +406,13 @@ class WerewordsGame{
         }
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(msg);
+        try{
         await this.players.get(user).questionEmbed.delete();
         this.players.get(user).questionEmbed = null;
+        }
+        catch(err){
+            console.log(err);
+        }
         /*await this.status.edit({
             embeds: [this.buildStatusEmbed()]
         });*/

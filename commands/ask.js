@@ -15,6 +15,9 @@ async function run(message, args, client){
                 return message.reply("You can only use this command in the game channel.");
             }
             const player = message.member.id;
+            if(!game.players.has(player)){
+                return message.reply("You are not playing!");
+            }
             if(game.players.get(player).questionEmbed){
                 return message.reply("You already have an unanswered question!");
             }

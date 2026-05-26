@@ -10,6 +10,9 @@ async function run(message, args, client){
             if(game.gameChannel != message.channel.id){
                 return message.reply("You can only use this command in the game channel.");
             }
+            if(!game.players.has(user.id)){
+                return message.reply("You are not playing!");
+            }
             let vote = roles_util.getPlayerID(args[0]);
             if (vote == user.id){
                 return message.reply ("You cannot vote for yourself!");
