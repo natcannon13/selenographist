@@ -20,7 +20,7 @@ Werewords is a social deduction word game for 4 to 15 players that combines Were
 4. Run !config to link the bot to the channels and role
 5. Run !werewords to play!
 
-####Permissions - IMPORTANT!####
+#### Permissions - IMPORTANT!
 The bot MUST be able to:
 - Send Messages
 - Modify (edit/delete) Messages
