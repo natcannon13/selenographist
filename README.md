@@ -16,9 +16,18 @@ Werewords is a social deduction word game for 4 to 15 players that combines Were
 
 1. Add the bot to your server.
 2. Create 2 text channels and 1 voice channel for the game.
-3. Create a mayor role and restrict one of the text channels to be only visible to the mayor.
+3. Create a mayor role and restrict one of the text channels to be only visible to the mayor (and the bot).
 4. Run !config to link the bot to the channels and role
 5. Run !werewords to play!
+
+####Permissions - IMPORTANT!####
+The bot MUST be able to:
+- Send Messages
+- Modify (edit/delete) Messages
+- Manage Roles (Bot role must be placed higher than Mayor role)
+- Join Voice
+- Speak
+- See the Mayor Channel
 
 ### 
 
