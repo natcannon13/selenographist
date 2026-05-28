@@ -97,19 +97,19 @@ The bot will then announce that the town has a number of minutes, depending on d
 
 
 
-During this time period players ask their questions to the Mayor. The Mayor will use the following command to answer:
+During this time period players ask their questions to the Mayor. They should state their question aloud in the voice channel, but use
+####!ask
+to queue their question for the mayor to answer.
+This command will send an embed message into the mayor channel with a button corresponding to each token.
 
-#### !t &lt;token&gt; &lt;player&gt;
-
-* Informs players of the Mayor's answer to their question, and tracks the remaining tokens.
 * There are 6 types of token.
 
-  * y (yes)
-  * n (no)
-  * m (maybe)
-  * s (so close)
-  * w (way way off)
-  * c (correct)
+  * Yes
+  * No
+  * Maybe
+  * So Close
+  * Way Way Off
+  * Correct
 * Tokens are limited.
 
   * 36 Yes/No tokens
@@ -117,7 +117,7 @@ During this time period players ask their questions to the Mayor. The Mayor will
   * 1 So Close token
   * 1 Way Way Off token
   * 1 Correct token
-* The mentioned player will be mentioned in the game channel with the Mayor's response.
+* When the Mayor clicks one of these buttons, the asking player will be mentioned in the game channel with the Mayor's response.
 
 
 
