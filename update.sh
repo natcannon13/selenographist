@@ -1,3 +1,3 @@
 #!/bin/bash
-git pull origin master
+git -c safe.directory=/pufferpanel pull origin master
 node index.js
