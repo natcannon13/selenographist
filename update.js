@@ -1,16 +1,10 @@
-const fs = require('fs');
-const { spawn } = require('child_process');
+const { exec } = require('child_process');
 
-const scriptPath = './update.sh';
+exec('bash ./update.sh', (error, stdout, stderr) => {
+  if (error) {
+    console.error('Error:', error);
+    return;
+  }
 
-// Make executable
-fs.chmodSync(scriptPath, 0o755);
-
-// Run script and inherit terminal I/O
-const child = spawn('bash', [scriptPath], {
-  stdio: 'inherit'
-});
-
-child.on('close', (code) => {
-  console.log(`Script exited with code ${code}`);
+  console.log(stdout);
 });
