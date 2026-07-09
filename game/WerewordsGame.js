@@ -196,7 +196,7 @@ class WerewordsGame{
     async dayPhase(){
         switch (this.difficulty){
             case "ridiculous":
-                this.timeLeft = 360;
+                this.timeLeft = 30;
                 break;
             case "hard":
                 this.timeLeft = 300;
@@ -265,6 +265,7 @@ class WerewordsGame{
         }
         let tokenCounts = [];
         let numVotes = 0;
+        let buttons = [];
         for(const player of this.players.values()){
             if(!player.isMayor){
                 tokenCounts.push({name: `**${player.member.displayName}**`, value: `${player.tokenStatsMessage()}`});
@@ -272,8 +273,23 @@ class WerewordsGame{
             if(player.vote){
                 numVotes++;
             }
+            const button = new ButtonBuilder()
+            .setCustomId(`vote:${this.guildID}:${player.id}:vote`)
+            .setLabel(`${player.member.displayName}`)
+            .setStyle(ButtonStyle.Primary);
+            buttons.push(button);
         }
-        return new EmbedBuilder()
+        let components = [];
+        for(let i = 0; i < buttons.length; i += 5){
+            const row = new ActionRowBuilder()
+            for(let j = 0; j < 5; j++){
+                if(buttons[i + j]){
+                    row.addComponents(buttons[i + j]);
+                }
+            }
+            components.push(row);
+        }
+        const embed = new EmbedBuilder()
         .setTitle("Werewords Voting")
         .addFields(
             {name: "Time Remaining", value: `0:${seconds}`, inline: true},
@@ -281,6 +297,11 @@ class WerewordsGame{
             {name: "Magic Word", value: `${this.word}`, inline: true}
         )
         .addFields(tokenCounts);
+
+        return({
+            embeds: [embed],
+            components: components
+        })
     }
 
     buildResultsEmbed(){
@@ -355,9 +376,7 @@ class WerewordsGame{
                         })
                     }
                     if(this.phase === "werewolfVote" || this.phase === "seerKill"){
-                        await this.status.edit({
-                            embeds: [this.buildVoteEmbed()]
-                        });
+                        await this.status.edit(this.buildVoteEmbed());
                     }
                 } catch(err){
                     console.error("Embed failure", err);
@@ -507,9 +526,8 @@ class WerewordsGame{
             await this.voice.playAndWait("outoftokens");
         }
         this.startTimer(60000, this.changePhase);
-        const embed = this.buildStatusEmbed();
         const channel = this.guild.channels.cache.get(this.gameChannel);
-        this.status = await channel.send({embeds: [embed]});
+        this.status = await channel.send(this.buildVoteEmbed());
         this.updateEmbed();
     }
 
@@ -527,7 +545,6 @@ class WerewordsGame{
             this.werewolfSpokesman = werewolves[0];
         }
         this.startTimer(30000, this.changePhase);
-        const embed = this.buildStatusEmbed();
         const channel = this.guild.channels.cache.get(this.gameChannel);
         let msg = "Werewolves: ";
         for(const werewolf of werewolves){
@@ -535,7 +552,7 @@ class WerewordsGame{
         }
         msg += `\nThe Werewolf who will be voting is: **${this.werewolfSpokesman}**`;
         await channel.send(msg);
-        this.status = await channel.send({embeds: [embed]});
+        this.status = await channel.send(this.buildVoteEmbed());
         this.updateEmbed();
     }
 
