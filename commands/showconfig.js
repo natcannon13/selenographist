@@ -1,6 +1,9 @@
 const config_util = require("../utils/config_util.js");
 
-function run(message, args, client){
+async function run(message, args, client){
+    if(!config_util.config[message.guild.id]){
+        return message.reply("The bot is not configured for this server. A server admin must use !config first.");
+    }
     if (!message.member.permissions.has("Administrator")){
         return message.reply("You must be an admin to use this command!");
     }

@@ -9,38 +9,50 @@ client.on('clientReady', () => {
   config_util.loadConfig();
 });
 
-client.on('messageCreate', message => {
+const COMMANDS = new Set(["config", "showconfig", "werewords", "word", "ask", "quit"]);
+const BUTTONS = new Set(["token", "vote"]);
+
+client.on('messageCreate', async (message) => {
   if (!(message.content.startsWith("!"))) {
     return;
   }
   const args = message.content.slice(1).split(" ");
   const commandName = args.shift().toLowerCase();
 
+  if (!COMMANDS.has(commandName)){
+    await message.reply('Unknown command, perhaps you mistyped it?');
+    return;
+  }
   try{
     const command = require(`./commands/${commandName}.js`);
-    command.run(message, args, client);
+    await command.run(message, args, client);
   }
   catch(err){
     console.log(err);
-    message.reply('Unknown command, perhaps you mistyped it?');
+    await message.reply('Unknown command, perhaps you mistyped it?');
   }
 
 });
 
-client.on("interactionCreate", async interaction => {
+client.on("interactionCreate", async (interaction) => {
   if(!interaction.isButton()){
     return;
   }
   const [action, guildId, user, option] =
     interaction.customId.split(":");
 
+  if (!BUTTONS.has(action)){
+    await interaction.reply('Button action not found');
+    return;
+  }
+
   try{
     const interact = require(`./buttons/${action}.js`);
-    interact.run(interaction, guildId, user, option);
+    await interact.run(interaction, guildId, user, option);
   }
   catch(err){
     console.log(err);
-    interaction.reply("Interaction failed");
+    await interaction.reply("Interaction failed");
   }
 });
 

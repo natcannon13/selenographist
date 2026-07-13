@@ -5,6 +5,9 @@ const config_util = require("../utils/config_util.js");
 const roles_util = require("../utils/roles_util.js");
 
 async function run(message, args, client){
+    if(!config_util.config[message.guild.id]){
+        return message.reply("The bot is not configured for this server. A server admin must use !config first.");
+    }
     const member = await message.guild.members.fetch(message.author.id);
     if (!(member.voice.channel)) {
         return message.reply("You must be in the voice channel to start Werewords!");

@@ -9,28 +9,31 @@ async function run(interaction, guildId, user, option){
     if(!game){
         return;
     }
+    if(!game.phase === "questions"){
+        return interaction.reply("The game is not in the questions phase!");
+    }
     if(!(interaction.member.id === game.mayor)){
         return interaction.reply("You are not the mayor!");
     }
     await interaction.deferUpdate();
     switch(option){
         case "yes":
-            game.giveToken('y', user);
+            await game.giveToken('y', user);
             break;
         case "no":
-            game.giveToken('n', user);
+            await game.giveToken('n', user);
             break;
         case "maybe":
-            game.giveToken('m', user);
+            await game.giveToken('m', user);
             break;
         case "soClose":
-            game.giveToken('s', user);
+            await game.giveToken('s', user);
             break;
         case "wayWayOff":
-            game.giveToken('w', user);
+            await game.giveToken('w', user);
             break;
         case "correct":
-            game.wordGuessed(user);
+            await game.wordGuessed(user);
             break;
     }
 }

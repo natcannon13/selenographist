@@ -43,7 +43,7 @@ class WerewordsGame{
         this.status = null;
         this.mayorStatus = null;
         this.updateInterval = null;
-        this.vote = [];
+        this.vote = null;
         this.werewolfSpokesman = null;
         this.onEnd = onEnd;
         this.questions = []
@@ -75,12 +75,12 @@ class WerewordsGame{
             case "seerKill":
                 this.clearTimer();
                 this.phase = "end";
-                this.endgame();
+                await this.endgame();
                 break;
             case "werewolfVote":
                 this.clearTimer();
                 this.phase = "end";
-                this.endgame();
+                await this.endgame();
                 break;
             case "end":
                 break;
@@ -168,7 +168,8 @@ class WerewordsGame{
         }
         catch{
             await gameChannel.send("Failure! Make sure Selenographist has access to the mayor channel!");
-            this.destroy();
+            await this.destroy();
+            return;
         }
         this.word = await word_util.getWords(this.difficulty, this.players.get(this.mayor).role);
         let msg = "";
