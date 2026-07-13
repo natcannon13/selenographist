@@ -134,21 +134,13 @@ An embed message displays the time and number of Yes/No tokens remaining, as wel
 
 
 
-If any player receives the Correct token, the Werewolves get an opportunity to kill the Seer. The Werewolves are revealed to the rest of the players, and get 30 seconds to discuss who the seer is. One Werewolf is randomly selected to make the final decision. To kill the Seer, this Werewolf must use the following command within the 30 seconds:
+If any player receives the Correct token, the Werewolves get an opportunity to kill the Seer. The Werewolves are revealed to the rest of the players, and get 30 seconds to discuss who the seer is. One Werewolf is randomly selected to make the final decision. An embed message displays the tokens received by each player, and has buttons corresponding to each player. The Werewolf selects one player using the buttons.
 
-#### !vote &lt;player&gt;
+If the selected player is the Seer, the Werewolves win.
 
-If the mentioned player is the Seer, the Werewolves win.
-
-
-
-If the town runs out of Yes/No tokens or the timer runs out before they have guessed the Magic Word, the Village must now try to vote out a Werewolf. The Magic Word is revealed to every player, and the town gets 60 seconds to discuss who the Werewolves are. Each player votes using the same vote command within the 60 seconds.
-
-
+If the town runs out of Yes/No tokens or the timer runs out before they have guessed the Magic Word, the Village must now try to vote out a Werewolf. The Magic Word is revealed to every player, and the town gets 60 seconds to discuss who the Werewolves are. The same embed message will be shown. Each player casts a vote by clicking the button corresponding to the player he or she wishes to vote for.
 
 If the player(s) with the most votes is a Werewolf, the Village wins.
-
-
 
 After either voting phase, an embed message is sent, displaying the Seer and Werewolves, and the winner of the game.
 
