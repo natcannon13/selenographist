@@ -107,7 +107,7 @@ The bot will then announce that the town has a number of minutes, depending on d
 
 
 During this time period players ask their questions to the Mayor. They should state their question aloud in the voice channel, but use
-####!ask
+#### !ask
 to queue their question for the mayor to answer.
 This command will send an embed message into the mayor channel with a button corresponding to each token.
 
