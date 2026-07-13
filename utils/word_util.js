@@ -55,13 +55,13 @@ async function getWords(difficulty, role){
             }
             break;
     }
-    for(list of matchingLists){
-        addWords = (await fs.readFile(`${folderPath}/${list}`, "utf8")).split('\n').map(w => w.trim()).filter(w => w.length > 0);
+    for(const list of matchingLists){
+        let addWords = (await fs.readFile(`${folderPath}/${list}`, "utf8")).split('\n').map(w => w.trim()).filter(w => w.length > 0);
         words = words.concat(addWords);
     }
     matchingLists = files.filter(file => file.startsWith(secondaryPrefix));
     for(const list of matchingLists){
-        addWords = (await fs.readFile(`${folderPath}/${list}`, "utf8")).split('\n').map(w => w.trim()).filter(w => w.length > 0);
+        let addWords = (await fs.readFile(`${folderPath}/${list}`, "utf8")).split('\n').map(w => w.trim()).filter(w => w.length > 0);
         wordsSecondary = wordsSecondary.concat(addWords);
     }
     for(let i = 0; i < numModifiedWords; i++){

@@ -7,7 +7,7 @@ async function run(interaction, guildId, user, option){
     console.log(`button clicked: ${option}`);
     const game = GameManager.findGame(guildId);
     if(!game){
-        return;
+        return interaction.reply("No game found!");
     }
 
     let voter = interaction.member;
@@ -21,7 +21,7 @@ async function run(interaction, guildId, user, option){
     }
 
     if(game.phase === "seerKill"){
-        if(voter.displayName !== game.werewolfSpokesman){
+        if(voter.id !== game.werewolfSpokesman){
             return interaction.reply({content: "You are not the Voting Werewolf!", ephemeral: true});
         }
         else{

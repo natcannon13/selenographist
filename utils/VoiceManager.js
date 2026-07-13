@@ -47,8 +47,10 @@ class VoiceManager{
     }
 
     disconnect(){
-        this.connection.destroy();
-        this.connection = null;
+        if(this.connection){
+            this.connection.destroy();
+            this.connection = null;
+        }
     }
 }
 module.exports = VoiceManager;

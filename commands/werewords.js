@@ -23,6 +23,9 @@ async function run(message, args, client){
     }
     else if(args.length == 2){
         let mayorID = roles_util.getPlayerID(args[1]);
+        if(!mayorID){
+            return message.reply("Invalid mayor mention. Use @user.");
+        }
         let mayorPlayer = await message.guild.members.fetch(mayorID);
         if(mayorPlayer.voice.channel.id != activeChannel){
             return message.reply(`That person is not in the voice channel, and cannot be the Mayor.`)

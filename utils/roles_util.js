@@ -102,8 +102,14 @@ function shuffle(roles){
 }
 
 function getPlayerID(input){
-    const match = input.match(/^<@(\d+)>$/);
-    return match ? match[1] : null;
+    const mention = input.match(/^<@!?(\d+)>$/);
+    if(mention){
+        return mention[1];
+    }
+    if(/^\d{17,20}$/.test(input)){
+        return input;
+    }
+    return null;
 }
 
 module.exports = {

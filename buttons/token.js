@@ -7,9 +7,9 @@ async function run(interaction, guildId, user, option){
     console.log(`button clicked: ${option}`)
     const game = GameManager.findGame(guildId);
     if(!game){
-        return;
+        return interaction.reply("No game found!");
     }
-    if(!game.phase === "questions"){
+    if(!(game.phase === "questions")){
         return interaction.reply("The game is not in the questions phase!");
     }
     if(!(interaction.member.id === game.mayor)){

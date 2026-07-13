@@ -1,9 +1,9 @@
 const SecretInfo = require("../game/SecretInfo.js");
 async function sendRole(player){
-    if(player.isMayor){
-        await player.member.send("You are the Mayor!");
-    }
     try{
+        if(player.isMayor){
+            await player.member.send("You are the Mayor!");
+        }
         await player.member.send(`Your role is: ${player.role}`);
         return true;
     }

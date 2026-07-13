@@ -16,7 +16,7 @@ async function run(message, args, client){
             return message.reply("You can only use this command in the mayor channel.");
         }
         let index = args[0] - 1;
-        if (index >= game.word.length || index < 0){
+        if (!(typeof index === "number") || isNaN(index) || index >= game.word.length || index < 0){
             return message.reply("Invalid argument. Select a valid word.");
         }
         else{

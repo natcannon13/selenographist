@@ -63,6 +63,7 @@ class WerewordsGame{
                 clearInterval(this.updateInterval);
                 this.updateInterval = null;
                 this.clearTimer();
+                await this.clearOpenQuestionEmbeds();
                 if(this.villageWin){
                     this.phase = "seerKill";
                     await this.identifySeer();
@@ -197,7 +198,7 @@ class WerewordsGame{
     async dayPhase(){
         switch (this.difficulty){
             case "ridiculous":
-                this.timeLeft = 30;
+                this.timeLeft = 360;
                 break;
             case "hard":
                 this.timeLeft = 300;
@@ -312,20 +313,21 @@ class WerewordsGame{
         let seer = null;
         let apprentice = null;
         if (!this.villageWin) {
-            const numbers = this.countVotes(true);
+            const tallies = this.getVoteTallies();
             for (const player of this.players.values()) {
-                const count = numbers[player.id] ?? 0;
                 voteCounts.push({
                     name: `**${player.member.displayName}**`,
-                    value: `${count}`,
+                    value: `${tallies[player.id] ?? 0}`,
                 });
             }
-        }
-        else{
-            let numbers = this.vote;
-            if(numbers != null){
-                voteCounts.push({name: `**${this.players.get(numbers).member.displayName}**`, value: "1"});
-            }
+        } else if (typeof this.vote === "string" && this.players.has(this.vote)) {
+            const target = this.players.get(this.vote);
+            voteCounts.push({
+                name: `**${target.member.displayName}**`,
+                value: "1",
+            });
+        } else {
+            voteCounts.push({ name: "Seer kill vote", value: "None" });
         }
         for(const player of this.players.values()){
                 if(player.role === "Werewolf"){
@@ -393,21 +395,60 @@ class WerewordsGame{
         this.players.get(user).questionEmbed = message;
     }
 
+    async clearOpenQuestionEmbeds(){
+        if(!this.players) return;
+        for(const player of this.players.values()){
+            if(!player.questionEmbed) continue;
+            const embed = player.questionEmbed;
+            player.questionEmbed = null;
+            try{
+                await embed.delete();
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
+    }
+
     async giveToken(token, user){
         let player = this.players.get(user);
+        if(!player || player.questionEmbed == null){
+            return;
+        }
+        const embed = player.questionEmbed;
+        player.questionEmbed = null;
+
+        const stockKey = ({
+            y: "yesNo",
+            n: "yesNo",
+            m: "maybe",
+            s: "soClose",
+            w: "wayWayOff"
+        })[token];
+        if(!stockKey || this.tokens[stockKey] <= 0){
+            try{
+                await embed.delete();
+            }
+            catch(err){
+                console.log(err);
+            }
+            return;
+        }
+
         let msg = `<@${user}>, The Mayor answered your question: **`;
+        let depletedYesNo = false;
         switch(token){
             case 'y':
                 msg += ("YES** " + emoji_util.yes);
                 this.tokens.yesNo--;
                 player.tokens.yes++;
-                await this.checkTokens();
+                depletedYesNo = this.tokens.yesNo == 0;
                 break;
             case 'n':
                 msg += ("NO** " + emoji_util.no);
                 this.tokens.yesNo--;
                 player.tokens.no++;
-                await this.checkTokens();
+                depletedYesNo = this.tokens.yesNo == 0;
                 break;
             case 'm':
                 msg += ("MAYBE** " + emoji_util.maybe);
@@ -423,19 +464,19 @@ class WerewordsGame{
                 msg += ("WAY WAY OFF!** " + emoji_util.wayWayOff);
                 this.tokens.wayWayOff--;
                 player.tokens.wayWayOff++;
+                break;
         }
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(msg);
         try{
-        await this.players.get(user).questionEmbed.delete();
-        this.players.get(user).questionEmbed = null;
+            await embed.delete();
         }
         catch(err){
             console.log(err);
         }
-        /*await this.status.edit({
-            embeds: [this.buildStatusEmbed()]
-        });*/
+        if(depletedYesNo){
+            await this.checkTokens();
+        }
     }
 
     buildTokenEmbed(user){
@@ -447,12 +488,14 @@ class WerewordsGame{
             .setCustomId(`token:${this.guildID}:${user}:yes`)
             .setLabel(`Yes: ${this.tokens.yesNo}`)
             .setStyle(ButtonStyle.Primary)
+            .setDisabled(!this.tokens.yesNo)
             .setEmoji('1494609206223962183');
 
         const noButton = new ButtonBuilder()
             .setCustomId(`token:${this.guildID}:${user}:no`)
             .setLabel(`No: ${this.tokens.yesNo}`)
             .setStyle(ButtonStyle.Primary)
+            .setDisabled(!this.tokens.yesNo)
             .setEmoji('1494609273865371649');
 
         const maybeButton = new ButtonBuilder()
@@ -480,6 +523,7 @@ class WerewordsGame{
             .setCustomId(`token:${this.guildID}:${user}:correct`)
             .setLabel(`Correct!: ${this.tokens.correct}`)
             .setStyle(ButtonStyle.Primary)
+            .setDisabled(!this.tokens.correct)
             .setEmoji('1494609305775771658');
 
         const row1 = new ActionRowBuilder()
@@ -502,9 +546,28 @@ class WerewordsGame{
     }
 
     async wordGuessed(user){
-        //You discovered the magic word audio
-        await this.players.get(user).questionEmbed.delete();
-        this.players.get(user).questionEmbed = null;
+        let player = this.players.get(user);
+        if(!player || player.questionEmbed == null){
+            return;
+        }
+        const embed = player.questionEmbed;
+        player.questionEmbed = null;
+        if(this.tokens.correct <= 0){
+            try{
+                await embed.delete();
+            }
+            catch(err){
+                console.log(err);
+            }
+            return;
+        }
+        this.tokens.correct = 0;
+        try{
+            await embed.delete();
+        }
+        catch(err){
+            console.log(err);
+        }
         const channel = this.guild.channels.cache.get(this.gameChannel);
         await channel.send(`<@${user}> discovered the Magic Word!`);
         await this.voice.playAndWait("foundword");
@@ -536,7 +599,7 @@ class WerewordsGame{
         let werewolves = [];
         for(const player of this.players.values()){
             if(player.role === "Werewolf"){
-                werewolves.push(player.member.displayName);
+                werewolves.push(player.id);
             }
         }
         if(werewolves.length > 1){
@@ -548,10 +611,11 @@ class WerewordsGame{
         this.startTimer(30000, this.changePhase);
         const channel = this.guild.channels.cache.get(this.gameChannel);
         let msg = "Werewolves: ";
-        for(const werewolf of werewolves){
-            msg += (werewolf + " ");
+        for(const werewolfId of werewolves){
+            msg += (this.players.get(werewolfId).member.displayName + " ");
         }
-        msg += `\nThe Werewolf who will be voting is: **${this.werewolfSpokesman}**`;
+        const spokesmanName = this.players.get(this.werewolfSpokesman).member.displayName;
+        msg += `\nThe Werewolf who will be voting is: **${spokesmanName}**`;
         await channel.send(msg);
         this.status = await channel.send(this.buildVoteEmbed());
         this.updateEmbed();
@@ -562,17 +626,17 @@ class WerewordsGame{
         await this.changePhase();
     }
 
-    countVotes(rawVotes) {
+    getVoteTallies() {
         const votes = {};
         for (const player of this.players.values()) {
             if (player.vote == null) continue;
             votes[player.vote] = (votes[player.vote] ?? 0) + 1;
         }
+        return votes;
+    }
 
-        if (rawVotes) {
-            return votes;
-        }
-
+    getExecutionTargets() {
+        const votes = this.getVoteTallies();
         let maxVotes = 0;
         for (const count of Object.values(votes)) {
             if (count > maxVotes) maxVotes = count;
@@ -607,8 +671,7 @@ class WerewordsGame{
                     }
                 }
             }
-            const seerName = this.players.get(seer).member.displayName;
-            if(seer === this.vote){
+            if(seer != null && seer === this.vote){
                 channel.send(`Game Over! The Werewolves win!`);
             }
             else{
@@ -622,7 +685,7 @@ class WerewordsGame{
                     werewolves.push(player.member.id);
                 }
             }
-            let executions = this.countVotes(false);
+            let executions = this.getExecutionTargets();
             let foundWerewolf = false;
             for(const player of executions){
                 if(werewolves.includes(player)){
