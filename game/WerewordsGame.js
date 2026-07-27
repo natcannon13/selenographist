@@ -6,11 +6,12 @@ const emoji_util = require("../utils/emoji_util.js");
 const Player = require("../game/Player.js");
 const SecretInfo = require("../game/SecretInfo.js");
 const VoiceManager = require("../utils/VoiceManager.js");
-const { time, ActionRow } = require("discord.js");
 const { EmbedBuilder,
     ButtonBuilder,
     ButtonStyle,
-    ActionRowBuilder
+    ActionRowBuilder,
+    ActionRow, 
+    time
  } = require('discord.js');
 const GameManager = require("./GameManager.js");
 class WerewordsGame{
@@ -166,22 +167,12 @@ class WerewordsGame{
         try{
             //send mayor the embed
             await dm_util.sendWordChoice(this.players.get(this.mayor), this.difficulty, this.players.get(this.mayor).role);
-            await mayorChannel.send(`<@&${this.mayorRole}>\n Choose from these words using !word <n> where n is the number of your word.`);
         }
-        catch{
+       catch{
             await gameChannel.send("Message failed! Make sure Selenographist is able to direct message you!");
             await this.destroy();
             return;
         }
-        this.word = await word_util.getWords(this.difficulty, this.players.get(this.mayor).role, this.guildID);
-        let msg = "";
-        for(let i = 0; i < this.word.length; i++){
-            msg += `${i+1}. ${this.word[i]}`;
-            if (i < this.word.length - 1){
-                msg += "\n";
-            }
-        }
-        await mayorChannel.send(msg);
         await this.voice.playAndWait("mayorchoose");
     }
 

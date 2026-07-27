@@ -1,6 +1,13 @@
-const { EmbedBuilder, ButtonStyle } = require("discord.js");
+const { EmbedBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
+    ActionRow
+ } = require('discord.js');
 const SecretInfo = require("../game/SecretInfo.js");
-const word_util = require("word_util.js");
+const word_util = require("./word_util.js");
+
+
 
 async function sendRole(player){
     try{
@@ -64,13 +71,15 @@ async function sendInfo(player, info){
 }
 
 async function sendWordChoice(mayor, difficulty, role, guildID){
-    let words = word_util.getWords(difficulty, role);
+    let words = await word_util.getWords(difficulty, role);
+    console.log(words);
     let embed = buildWordsEmbed(words, guildID);
     try{
-        await mayor.send(embed);
+        await mayor.member.send(embed);
+        return true;
     }
     catch{
-        console.error(`Failed to DM ${player.member.tag}`);
+        console.error(`Failed to DM ${mayor.member.tag}`);
         return false;
     }
 }
@@ -80,7 +89,7 @@ function buildWordsEmbed(words, guildID){
     for (const word of words){
         const button = new ButtonBuilder()
         .setCustomId(`word:${guildID}:${word}:word`)
-        .setLabel(`{word}`)
+        .setLabel(`${word}`)
         .setStyle(ButtonStyle.Primary);
         buttons.push(button);
     }
