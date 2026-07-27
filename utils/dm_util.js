@@ -1,4 +1,7 @@
+const { EmbedBuilder, ButtonStyle } = require("discord.js");
 const SecretInfo = require("../game/SecretInfo.js");
+const word_util = require("word_util.js");
+
 async function sendRole(player){
     try{
         if(player.isMayor){
@@ -55,12 +58,47 @@ async function sendInfo(player, info){
         return true;
     }
     catch{
-        console.error(`Failed to DM ${player.member.tag}:`);
+        console.error(`Failed to DM ${player.member.tag}`);
         return false;
     }
 }
 
+async function sendWordChoice(mayor, difficulty, role, guildID){
+    let words = word_util.getWords(difficulty, role);
+    let embed = buildWordsEmbed(words, guildID);
+    try{
+        await mayor.send(embed);
+    }
+    catch{
+        console.error(`Failed to DM ${player.member.tag}`);
+        return false;
+    }
+}
+
+function buildWordsEmbed(words, guildID){
+    let buttons = [];
+    for (const word of words){
+        const button = new ButtonBuilder()
+        .setCustomId(`word:${guildID}:${word}:word`)
+        .setLabel(`{word}`)
+        .setStyle(ButtonStyle.Primary);
+        buttons.push(button);
+    }
+    const row = new ActionRowBuilder();
+    row.addComponents(buttons);
+
+    let embed = new EmbedBuilder()
+    .setTitle("Mayor - Word Choice")
+    .setDescription("Click one of the below buttons to choose the Magic Word.");
+
+    return({
+        embeds: [embed],
+        components: [row]
+    });
+}
+
 module.exports = {
     sendRole,
-    sendInfo
+    sendInfo,
+    sendWordChoice
 }

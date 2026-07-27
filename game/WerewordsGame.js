@@ -162,17 +162,18 @@ class WerewordsGame{
     }
 
     async chooseWord(){
-        const mayorChannel = this.guild.channels.cache.get(this.mayorChannel);
         const gameChannel = this.guild.channels.cache.get(this.gameChannel);
         try{
+            //send mayor the embed
+            await dm_util.sendWordChoice(this.players.get(this.mayor), this.difficulty, this.players.get(this.mayor).role);
             await mayorChannel.send(`<@&${this.mayorRole}>\n Choose from these words using !word <n> where n is the number of your word.`);
         }
         catch{
-            await gameChannel.send("Failure! Make sure Selenographist has access to the mayor channel!");
+            await gameChannel.send("Message failed! Make sure Selenographist is able to direct message you!");
             await this.destroy();
             return;
         }
-        this.word = await word_util.getWords(this.difficulty, this.players.get(this.mayor).role);
+        this.word = await word_util.getWords(this.difficulty, this.players.get(this.mayor).role, this.guildID);
         let msg = "";
         for(let i = 0; i < this.word.length; i++){
             msg += `${i+1}. ${this.word[i]}`;
@@ -184,8 +185,8 @@ class WerewordsGame{
         await this.voice.playAndWait("mayorchoose");
     }
 
-    async wordChosen(index){
-        this.word = this.word[index];
+    async wordChosen(word){
+        this.word = word;
         let info = new SecretInfo(this.word);
         info.setInfo(this.players);
         for(const player of this.players.values()){
@@ -283,7 +284,7 @@ class WerewordsGame{
         }
         let components = [];
         for(let i = 0; i < buttons.length; i += 5){
-            const row = new ActionRowBuilder()
+            const row = new ActionRowBuilder();
             for(let j = 0; j < 5; j++){
                 if(buttons[i + j]){
                     row.addComponents(buttons[i + j]);
