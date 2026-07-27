@@ -10,7 +10,7 @@ client.on('clientReady', () => {
 });
 
 const COMMANDS = new Set(["config", "showconfig", "werewords", "word", "ask", "quit"]);
-const BUTTONS = new Set(["token", "vote"]);
+const BUTTONS = new Set(["token", "vote", "word"]);
 
 client.on('messageCreate', async (message) => {
   if (!(message.content.startsWith("!"))) {

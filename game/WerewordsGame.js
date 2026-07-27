@@ -166,7 +166,7 @@ class WerewordsGame{
         const gameChannel = this.guild.channels.cache.get(this.gameChannel);
         try{
             //send mayor the embed
-            await dm_util.sendWordChoice(this.players.get(this.mayor), this.difficulty, this.players.get(this.mayor).role);
+            await dm_util.sendWordChoice(this.players.get(this.mayor), this.difficulty, this.players.get(this.mayor).role, this.guildID);
         }
        catch{
             await gameChannel.send("Message failed! Make sure Selenographist is able to direct message you!");

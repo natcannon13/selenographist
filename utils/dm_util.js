@@ -72,7 +72,7 @@ async function sendInfo(player, info){
 
 async function sendWordChoice(mayor, difficulty, role, guildID){
     let words = await word_util.getWords(difficulty, role);
-    console.log(words);
+    //console.log(words);
     let embed = buildWordsEmbed(words, guildID);
     try{
         await mayor.member.send(embed);
