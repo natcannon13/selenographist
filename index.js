@@ -9,7 +9,7 @@ client.on('clientReady', () => {
   config_util.loadConfig();
 });
 
-const COMMANDS = new Set(["config", "showconfig", "werewords", "word", "ask", "quit"]);
+const COMMANDS = new Set(["config", "showconfig", "werewords", "ask", "quit"]);
 const BUTTONS = new Set(["token", "vote", "word"]);
 
 client.on('messageCreate', async (message) => {
@@ -39,7 +39,7 @@ client.on("interactionCreate", async (interaction) => {
     return;
   }
   const [action, guildId, user, option] =
-    interaction.customId.split(":");
+    interaction.customId.split(";");
 
   if (!BUTTONS.has(action)){
     await interaction.reply('Button action not found');

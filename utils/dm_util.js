@@ -80,15 +80,17 @@ async function sendWordChoice(mayor, difficulty, role, guildID){
     }
     catch{
         console.error(`Failed to DM ${mayor.member.tag}`);
-        return false;
+        throw("DM fail error");
     }
 }
 
 function buildWordsEmbed(words, guildID){
     let buttons = [];
+    let i = 0;
     for (const word of words){
+        i++;
         const button = new ButtonBuilder()
-        .setCustomId(`word:${guildID}:${word}:word`)
+        .setCustomId(`word;${guildID};${word};${i}`)
         .setLabel(`${word}`)
         .setStyle(ButtonStyle.Primary);
         buttons.push(button);

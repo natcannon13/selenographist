@@ -48,6 +48,7 @@ class WerewordsGame{
         this.werewolfSpokesman = null;
         this.onEnd = onEnd;
         this.questions = []
+        this.hasChosenWord = false;
     }
 
     async changePhase(){
@@ -268,7 +269,7 @@ class WerewordsGame{
                 numVotes++;
             }
             const button = new ButtonBuilder()
-            .setCustomId(`vote:${this.guildID}:${player.id}:vote`)
+            .setCustomId(`vote;${this.guildID};${player.id};vote`)
             .setLabel(`${player.member.displayName}`)
             .setStyle(ButtonStyle.Primary);
             buttons.push(button);
@@ -477,42 +478,42 @@ class WerewordsGame{
         .setDescription("Choose a token:");
 
         const yesButton = new ButtonBuilder()
-            .setCustomId(`token:${this.guildID}:${user}:yes`)
+            .setCustomId(`token;${this.guildID};${user};yes`)
             .setLabel(`Yes: ${this.tokens.yesNo}`)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(!this.tokens.yesNo)
             .setEmoji('1494609206223962183');
 
         const noButton = new ButtonBuilder()
-            .setCustomId(`token:${this.guildID}:${user}:no`)
+            .setCustomId(`token;${this.guildID};${user};no`)
             .setLabel(`No: ${this.tokens.yesNo}`)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(!this.tokens.yesNo)
             .setEmoji('1494609273865371649');
 
         const maybeButton = new ButtonBuilder()
-            .setCustomId(`token:${this.guildID}:${user}:maybe`)
+            .setCustomId(`token;${this.guildID};${user};maybe`)
             .setLabel(`Maybe: ${this.tokens.maybe}`)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(!this.tokens.maybe)
             .setEmoji('1494609290252783779');
 
         const soCloseButton = new ButtonBuilder()
-            .setCustomId(`token:${this.guildID}:${user}:soClose`)
+            .setCustomId(`token;${this.guildID};${user};soClose`)
             .setLabel(`So Close!: ${this.tokens.soClose}`)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(!this.tokens.soClose)
             .setEmoji('1494609243981090866');
 
         const wayWayOffButton = new ButtonBuilder()
-            .setCustomId(`token:${this.guildID}:${user}:wayWayOff`)
+            .setCustomId(`token;${this.guildID};${user};wayWayOff`)
             .setLabel(`Way Way Off!: ${this.tokens.wayWayOff}`)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(!this.tokens.wayWayOff)
             .setEmoji('1494609231654027304');
 
         const correctButton = new ButtonBuilder()
-            .setCustomId(`token:${this.guildID}:${user}:correct`)
+            .setCustomId(`token;${this.guildID};${user};correct`)
             .setLabel(`Correct!: ${this.tokens.correct}`)
             .setStyle(ButtonStyle.Primary)
             .setDisabled(!this.tokens.correct)

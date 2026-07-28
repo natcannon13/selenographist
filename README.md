@@ -80,22 +80,16 @@ Which roles are used depends on player count:
 * 14 - Seer, Apprentice, Beholder, 2x Mason, 3x Werewolf, 6x Villager
 * 15 - Seer, Apprentice, Beholder, 2x Mason, 3x Werewolf, 7x Villager
 
-
-
-The Mayor receives a Discord role granting them access to the mayor channel. The Mayor is then pinged in the mayor channel with a choice of a number of words depending on difficulty.
+The Mayor receives a Discord role granting them access to the mayor channel. The Mayor will be direct messaged an embed message with a list of word choices. The number of possible choices depends on difficulty.
 
 * 2 on easy
 * 3 on medium
 * 4 on hard
 * 5 on ridiculous
 
-The word choices will be numbered and displayed in the mayor channel. The mayor selects the Magic Word with
-
-#### !word &lt;number&gt;
+The Mayor will select the Magic Word by clicking the corresponding button on the embed message.
 
 The Seer and Werewolves then receive a direct message containing the word. The Apprentice receives a direct message containing the word if the Mayor is the Seer.
-
-
 
 The bot will then announce that the town has a number of minutes, depending on difficulty, to guess the word.
 
@@ -103,8 +97,6 @@ The bot will then announce that the town has a number of minutes, depending on d
 * 4 on medium
 * 5 on hard
 * 6 on ridiculous
-
-
 
 During this time period players ask their questions to the Mayor. They should state their question aloud in the voice channel, but use
 #### !ask
@@ -128,11 +120,7 @@ This command will send an embed message into the mayor channel with a button cor
   * 1 Correct token
 * When the Mayor clicks one of these buttons, the asking player will be mentioned in the game channel with the Mayor's response.
 
-
-
 An embed message displays the time and number of Yes/No tokens remaining, as well as the tokens received by each player.
-
-
 
 If any player receives the Correct token, the Werewolves get an opportunity to kill the Seer. The Werewolves are revealed to the rest of the players, and get 30 seconds to discuss who the seer is. One Werewolf is randomly selected to make the final decision. An embed message displays the tokens received by each player, and has buttons corresponding to each player. The Werewolf selects one player using the buttons.
 

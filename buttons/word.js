@@ -15,9 +15,13 @@ async function run(interaction, guildId, word, option){
             return interaction.reply("You cannot use this right now.");
     }
 
-    game.wordChosen(word);
+    if(game.hasChosenWord){
+        return interaction.reply("You already chose a word.");
+    }
 
+    game.hasChosenWord = true;
     await interaction.deferUpdate();
+    await game.wordChosen(word);
     return interaction.followUp(`Your magic word is: **${word}**!`);
 }
 
