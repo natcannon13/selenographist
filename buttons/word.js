@@ -15,14 +15,34 @@ async function run(interaction, guildId, word, option){
             return interaction.reply("You cannot use this right now.");
     }
 
+    //shouldn't happen ever, but if it does we protect against it
+    if(interaction.user.id != game.mayor){
+        return interaction.reply("You are not the mayor and should not have received this DM. Please file a bug report.");
+    }
+
     if(game.hasChosenWord){
         return interaction.reply("You already chose a word.");
     }
 
+    // Sync latch before any await to block double-clicks
     game.hasChosenWord = true;
     await interaction.deferUpdate();
-    await game.wordChosen(word);
-    return interaction.followUp(`Your magic word is: **${word}**!`);
+    try{
+        await game.wordChosen(word);
+        return interaction.followUp(`Your magic word is: **${word}**!`);
+    }
+    catch(err){
+        console.error(err);
+        game.hasChosenWord = false;
+        game.word = null;
+        try{
+            await interaction.followUp("Something went wrong choosing the word. Ending the game.");
+        }
+        catch(followUpErr){
+            console.error(followUpErr);
+        }
+        await game.destroy();
+    }
 }
 
 module.exports = {

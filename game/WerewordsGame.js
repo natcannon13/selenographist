@@ -47,7 +47,7 @@ class WerewordsGame{
         this.vote = null;
         this.werewolfSpokesman = null;
         this.onEnd = onEnd;
-        this.questions = []
+        this.questions = [];
         this.hasChosenWord = false;
     }
 

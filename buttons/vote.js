@@ -24,18 +24,18 @@ async function run(interaction, guildId, user, option){
         if(voter.id !== game.werewolfSpokesman){
             return interaction.reply({content: "You are not the Voting Werewolf!", ephemeral: true});
         }
-        else{
-            await game.seerVoteReceived(user);
-        }
+        await interaction.deferUpdate();
+        await game.seerVoteReceived(user);
+        return interaction.followUp({content: "Vote cast successfully!", ephemeral: true});
     }
-    else if(game.phase === "werewolfVote"){
+
+    if(game.phase === "werewolfVote"){
+        await interaction.deferUpdate();
         game.players.get(voter.id).vote = user;
+        return interaction.followUp({content: "Vote cast successfully!", ephemeral: true});
     }
-    else{
-        return interaction.reply({content: "You cannot use this right now!", ephemeral: true});
-    }
-    await interaction.deferUpdate();
-    return interaction.followUp({content: "Vote cast successfully!", ephemeral: true});
+
+    return interaction.reply({content: "You cannot use this right now!", ephemeral: true});
 }
 module.exports = {
     run
