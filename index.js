@@ -9,7 +9,7 @@ client.on('clientReady', () => {
   config_util.loadConfig();
 });
 
-const COMMANDS = new Set(["config", "showconfig", "werewords", "ask", "quit"]);
+const COMMANDS = new Set(["config", "showconfig", "werewords", "ask", "quit", "help"]);
 const BUTTONS = new Set(["token", "vote", "word"]);
 
 client.on('messageCreate', async (message) => {
