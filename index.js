@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 const config_util = require("./utils/config_util.js");
@@ -7,6 +7,14 @@ const config_util = require("./utils/config_util.js");
 client.on('clientReady', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   config_util.loadConfig();
+  client.user.setPresence({
+    activities: [{
+      name: "!help message",
+      type: ActivityType.Custom,
+      state: "Use !help to see commands"
+    }],
+    status: 'online'
+  });
 });
 
 const COMMANDS = new Set(["config", "showconfig", "werewords", "ask", "quit", "help"]);
