@@ -27,7 +27,7 @@ async function run(message, args, client){
             return message.reply("Invalid mayor mention. Use @user.");
         }
         let mayorPlayer = await message.guild.members.fetch(mayorID);
-        if(mayorPlayer.voice.channel.id != activeChannel){
+        if(!(mayorPlayer.voice.channel) || mayorPlayer.voice.channel.id != activeChannel){
             return message.reply(`That person is not in the voice channel, and cannot be the Mayor.`)
         }
         mayor = mayorID;
@@ -43,7 +43,7 @@ async function run(message, args, client){
     if(!game){
         return message.reply("There is already a game happening in this server!");
     }
-    GameManager.startGame(message.guild.id);
+    await GameManager.startGame(message.guild.id);
 }
 
 function standardize(difficulty){

@@ -21,7 +21,7 @@ const COMMANDS = new Set(["config", "showconfig", "werewords", "ask", "quit", "h
 const BUTTONS = new Set(["token", "vote", "word"]);
 
 client.on('messageCreate', async (message) => {
-  if (!(message.content.startsWith("!"))) {
+  if (message.author.bot || !(message.content.startsWith("!"))) {
     return;
   }
   const args = message.content.slice(1).split(" ");

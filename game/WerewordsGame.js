@@ -696,19 +696,19 @@ class WerewordsGame{
         }
         const embed = this.buildResultsEmbed();
         this.status = await channel.send({embeds: [embed]});
-        this.destroy();
+        await this.destroy();
     }
     async destroy(){
         this.clearTimer();
+        this.timer = null;
         let role = this.guild.roles.cache.get(this.mayorRole);
         for (const m of role.members.values()) {
             await m.roles.remove(role);
         }
-        this.timer = null;
-        this.players = null;
-        this.voice.disconnect();
         clearInterval(this.updateInterval);
         this.updateInterval = null;
+        this.players = null;
+        this.voice.disconnect();
         if (this.onEnd) {
         this.onEnd(
             this.guildID,

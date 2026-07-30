@@ -11,7 +11,7 @@ async function run(message, args, client){
     if (!message.member.permissions.has("Administrator") && !(message.member.id === game.mayor)){
         return message.reply("You must be the Mayor or an admin to quit the game!");
     }
-    game.destroy();
+    await game.destroy();
     return message.reply("Game successfully quit!");
 }
 

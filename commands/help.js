@@ -12,7 +12,7 @@ async function run(message, args, client){
         {name: "```!help```", value: "Shows the help menu and a description of the commands.", inline: false},
         {name: "```!rules```", value: "Shows the rules for playing Werewords.", inline: false},
         {name: "```!showconfig```", value: "Only usable by server administrators. Shows the channel configuration for this server.", inline: false},
-        {name: "```!config <game channel> <mayor channel> <voice channel> <mayor role>```", value: "Only usable by server administrators. Configures the channels for the server. Mention the channels to be used as the game channel, mayor channel, and voice channel, then mention the role to be used as the mayor role.", inline: false},
+        {name: "```!config <mayor role> <game channel> <mayor channel> <voice channel>```", value: "Only usable by server administrators. Configures the channels for the server. Mention the role to be used as the mayor role, then the channels to be used as the game channel, mayor channel, and voice channel.", inline: false},
     );
     return message.reply({embeds: [embed]});
 }

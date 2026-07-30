@@ -11,7 +11,7 @@ const currentVersion = `v${package.version}`;
   const remoteVersion = await versionNumber();
   console.log(currentVersion);
   console.log(remoteVersion);
-  if(currentVersion === remoteVersion){
+  if((!remoteVersion) || currentVersion === remoteVersion){
     const scriptPath = "./index.js";
     spawn('node', [scriptPath], {
       env: process.env,

@@ -29,8 +29,8 @@ function run(message, args, client){
         console.log(config_util.config[guildID]);
         return message.reply("Successfully configured!\nMayor Role: <@&" + mayorRole + ">\nGame Channel: <#" + gameChannel + ">\nMayor Channel: <#" + mayorChannel + ">\nVoice Channel: <#" + voiceChannel + ">");
     }
-    catch{
-
+    catch(error){
+        return message.reply("Failed to save configuration.");
     }
 }
 
