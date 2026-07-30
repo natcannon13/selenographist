@@ -17,7 +17,7 @@ client.on('clientReady', () => {
   });
 });
 
-const COMMANDS = new Set(["config", "showconfig", "werewords", "ask", "quit", "help"]);
+const COMMANDS = new Set(["config", "showconfig", "werewords", "ask", "quit", "help", "rules"]);
 const BUTTONS = new Set(["token", "vote", "word"]);
 
 client.on('messageCreate', async (message) => {

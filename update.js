@@ -20,9 +20,9 @@ const currentVersion = `v${package.version}`;
   }
   else{
     console.log("Updating")
-    /*spawn('bash', ['./update.sh'], {
+    spawn('bash', ['./update.sh'], {
       stdio: 'inherit'
-    });*/
+    });
   }
 })();
 
